@@ -400,8 +400,8 @@ function ShareScreen({ mode, screen }) {
           const dist = Math.abs(i - mainIdx)
           const offsetDir = i < mainIdx ? -1 : 1
           const delay = showSide ? 0.1 + dist * 0.06 : 0
-          const mainSize = forPage === 'invite' ? 90 : (published && visibility === 'public' ? 65 : 120)
-          const size = isMain ? mainSize : (showSide ? 65 : 0)
+          const mainSize = forPage === 'invite' ? 90 : (published && visibility === 'public' ? 78 : 120)
+          const size = isMain ? mainSize : (showSide ? 78 : 0)
 
           if (isMain) {
             return (
@@ -502,7 +502,7 @@ function ShareScreen({ mode, screen }) {
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                textAlign: 'center', gap: 20,
+                textAlign: 'center', gap: 40,
                 position: 'relative', minHeight: 0,
               }}>
                 {renderOrbRow({ forPage: 'share' })}
