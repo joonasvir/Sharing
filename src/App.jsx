@@ -329,6 +329,30 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
                 : <Circle size={32} color="#d4d4d4" />}
             </div>
           </button>
+          {/* Private */}
+          <button
+            onClick={() => onSelect('private')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '24px 20px 24px 16px', borderRadius: 24,
+              border: '1px solid rgba(0,0,0,0.08)',
+              background: '#fff',
+              cursor: 'pointer', width: '100%', fontFamily: 'inherit', textAlign: 'left',
+            }}
+          >
+            <div style={{ padding: 7, flexShrink: 0 }}>
+              <LockSimple size={40} color="#737373" />
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#737373' }}>Private</span>
+              <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#737373' }}>
+                Only you
+              </span>
+            </div>
+            <div style={{ flexShrink: 0 }}>
+              <Circle size={32} color="#d4d4d4" />
+            </div>
+          </button>
         </div>
       </div>
     </>
@@ -481,6 +505,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
         flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         gap: showSide ? anim.orbGap : 0,
+        marginTop: showSide ? 25 : 0,
         transition: `all ${ease}`,
       }}>
         {APP_ORBS.map((orb, i) => {
@@ -682,7 +707,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                   {/* Unpublished: expanded visibility options (clarity only) */}
                   {clarity && (
                     <div style={{
-                      maxHeight: !published ? 200 : 0,
+                      maxHeight: !published ? 300 : 0,
                       opacity: !published ? 1 : 0,
                       overflow: 'hidden',
                       transition: `all ${ease}`,
@@ -727,6 +752,24 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                           {visibility === 'unlisted'
                             ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
                             : <Circle size={28} color="#d4d4d4" />}
+                        </button>
+                        <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
+                        <button
+                          onClick={() => { setVisibility('private'); handleUnpublish() }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                          }}
+                        >
+                          <LockSimple size={28} color="#949494" />
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: '#949494' }}>Private</span>
+                            <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: '#aaaaaa' }}>
+                              Only you
+                            </span>
+                          </div>
+                          <Circle size={28} color="#d4d4d4" />
                         </button>
                       </div>
                     </div>
@@ -798,28 +841,6 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                   </button>
                 </div>
 
-                {/* Unpublish link */}
-                <div style={{
-                  maxHeight: published ? 60 : 0,
-                  opacity: published ? 1 : 0,
-                  overflow: 'hidden',
-                  transition: `all ${ease}`,
-                }}>
-                  <button
-                    onClick={() => !unpublishing && handleUnpublish()}
-                    style={{
-                      width: '100%',
-                      background: 'none', border: 'none',
-                      cursor: unpublishing ? 'default' : 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      gap: 8, padding: '16px 0 0', fontFamily: 'inherit',
-                      fontSize: 15, fontWeight: 500, color: '#ef4444',
-                    }}
-                  >
-                    <LockSimple size={20} color="#ef4444" />
-                    {unpublishing ? 'Unpublishing...' : 'Unpublish your app'}
-                  </button>
-                </div>
               </div>
               <div style={{ height: 28, flexShrink: 0 }} />
             </div>
@@ -962,7 +983,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
         <VisibilitySheet
           open={sheetOpen}
           visibility={visibility}
-          onSelect={(v) => { setVisibility(v); setSheetOpen(false) }}
+          onSelect={(v) => { if (v === 'private') { handleUnpublish(); } else { setVisibility(v); } setSheetOpen(false) }}
           onClose={() => setSheetOpen(false)}
         />
       )}
