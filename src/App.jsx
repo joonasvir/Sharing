@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   GlobeSimple,
   LinkSimple,
@@ -12,76 +12,115 @@ import {
   Circle,
 } from '@phosphor-icons/react'
 
-/* ─── Orb Display (animated) ─── */
+/* ─── App Card Carousel (publish animation) ─── */
 
-const SATELLITE_ORBS = [
-  { size: 75, x: 55, y: 30, hue: 210, startX: -120, startY: 0 },    // left
-  { size: 75, x: 235, y: 30, hue: 190, startX: 120, startY: 0 },    // right
-  { size: 70, x: 95, y: 110, hue: 30, startX: -80, startY: 80 },    // bottom-left
-  { size: 70, x: 185, y: 110, hue: 160, startX: 80, startY: 80 },   // bottom-right
+const CAROUSEL_APPS = [
+  { name: 'Collection', hue: 180 },
+  { name: 'Bucket list', hue: 35 },
+  { name: 'Daily Mindfulness', hue: 0, isMain: true },
+  { name: 'Run Club', hue: 280 },
 ]
 
-function OrbDisplay({ published }) {
-  const [animating, setAnimating] = useState(false)
-
-  useEffect(() => {
-    if (published) {
-      // Small delay so initial positions render first
-      const t = requestAnimationFrame(() => setAnimating(true))
-      return () => cancelAnimationFrame(t)
-    } else {
-      setAnimating(false)
-    }
-  }, [published])
-
-  const mainSize = published ? 120 : (published === false ? 120 : 120)
+function AppCarousel({ phase }) {
+  const isCard = phase === 'card'
+  const isRow = phase === 'row' || phase === 'done'
+  const showCards = isCard || isRow
 
   return (
     <div style={{
-      position: 'relative',
-      width: 310,
-      height: published ? 190 : 120,
-      transition: 'height 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+      width: '100%',
+      overflow: 'hidden',
       display: 'flex',
       justifyContent: 'center',
+      padding: '8px 0',
     }}>
-      {/* Main orb — always present */}
-      <img
-        src="/orb.png"
-        alt=""
-        style={{
-          position: published ? 'absolute' : 'relative',
-          width: mainSize,
-          height: mainSize,
-          borderRadius: '50%',
-          objectFit: 'cover',
-          ...(published && { left: 140, top: 0, transform: 'translateX(-50%)' }),
-          transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      />
-      {/* Satellite orbs */}
-      {SATELLITE_ORBS.map((orb, i) => (
-        <img
-          key={i}
-          src="/orb.png"
-          alt=""
-          style={{
-            position: 'absolute',
-            width: orb.size,
-            height: orb.size,
-            borderRadius: '50%',
-            objectFit: 'cover',
-            filter: `hue-rotate(${orb.hue}deg)`,
-            left: animating ? orb.x : 140 + orb.startX * 0.2,
-            top: animating ? orb.y : 30 + orb.startY * 0.2,
-            transform: 'translateX(-50%)',
-            opacity: published ? (animating ? 1 : 0) : 0,
-            scale: published ? (animating ? '1' : '0.3') : '0.3',
-            transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${i * 0.06}s`,
-            pointerEvents: 'none',
-          }}
-        />
-      ))}
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: isRow ? 12 : (isCard ? 8 : 0),
+        transition: 'gap 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+      }}>
+        {CAROUSEL_APPS.map((app) => {
+          const isMain = app.isMain
+
+          let width, padding, bg, shadow, iconSize, labelOpacity, scale, opacity, zIndex
+
+          if (!showCards) {
+            if (isMain) {
+              width = 120; padding = '0'; bg = 'transparent'; shadow = 'none'
+              iconSize = 120; labelOpacity = 0; scale = 1; opacity = 1; zIndex = 1
+            } else {
+              width = 0; padding = '0'; bg = 'transparent'; shadow = 'none'
+              iconSize = 0; labelOpacity = 0; scale = 0; opacity = 0; zIndex = 1
+            }
+          } else if (isCard) {
+            if (isMain) {
+              width = 155; padding = '20px 16px'; bg = '#fff'
+              shadow = '0 4px 24px rgba(0,0,0,0.10)'; iconSize = 100
+              labelOpacity = 1; scale = 1.06; opacity = 1; zIndex = 10
+            } else {
+              width = 110; padding = '16px 12px'; bg = '#fff'
+              shadow = '0 2px 12px rgba(0,0,0,0.06)'; iconSize = 70
+              labelOpacity = 1; scale = 0.92; opacity = 0.9; zIndex = 5
+            }
+          } else {
+            width = 110; padding = '14px 10px'; bg = '#fff'
+            shadow = '0 2px 8px rgba(0,0,0,0.06)'; iconSize = 80
+            labelOpacity = 1; scale = 1; opacity = 1; zIndex = 1
+          }
+
+          return (
+            <div
+              key={app.name}
+              style={{
+                width,
+                flexShrink: 0,
+                padding,
+                background: bg,
+                borderRadius: 20,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: showCards ? 8 : 0,
+                boxShadow: shadow,
+                transform: `scale(${scale})`,
+                opacity,
+                zIndex,
+                overflow: 'hidden',
+                transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+              }}
+            >
+              <img
+                src="/orb.png"
+                alt=""
+                style={{
+                  width: iconSize,
+                  height: iconSize,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  filter: app.hue !== 0 ? `hue-rotate(${app.hue}deg)` : 'none',
+                  flexShrink: 0,
+                  transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+                }}
+              />
+              <span style={{
+                fontSize: isCard && isMain ? 13 : 11,
+                fontWeight: 500,
+                color: '#0a0a0a',
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                opacity: labelOpacity,
+                maxHeight: showCards ? 20 : 0,
+                transition: 'all 0.4s ease',
+                overflow: 'hidden',
+              }}>
+                {app.name}
+              </span>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -342,9 +381,27 @@ function ShareScreen({ mode }) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
   const [published, setPublished] = useState(false)
+  const [phase, setPhase] = useState(null) // null | 'fading' | 'card' | 'row' | 'done'
   const clarity = mode === 'clarity'
 
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
+  const showPublished = phase === 'done'
+  const contentVisible = phase === null || phase === 'done'
+
+  const handlePublish = () => {
+    setPhase('fading')
+    setTimeout(() => {
+      setPublished(true)
+      setPhase('card')
+    }, 400)
+    setTimeout(() => setPhase('row'), 1100)
+    setTimeout(() => setPhase('done'), 1700)
+  }
+
+  const handleUnpublish = () => {
+    setPublished(false)
+    setPhase(null)
+  }
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -374,30 +431,132 @@ function ShareScreen({ mode }) {
           justifyContent: 'center', padding: clarity ? '0 30px' : '0 40px',
           textAlign: 'center', gap: clarity ? 16 : 25,
         }}>
-          <OrbDisplay published={published} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
-            <h1 style={{ fontSize: 24, fontWeight: published ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
-              {published
+          <AppCarousel phase={phase} />
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+            opacity: contentVisible ? 1 : 0,
+            transition: 'opacity 0.35s ease',
+          }}>
+            <h1 style={{ fontSize: 24, fontWeight: showPublished ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
+              {showPublished
                 ? 'Your mini-app is published!'
                 : 'Publish your app to share it'}
             </h1>
             <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-              {published
+              {showPublished
                 ? 'If you want to use it with your friends only, use the Invite tab.'
                 : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
             </p>
           </div>
         </div>
 
-        {/* Bottom section */}
-        {clarity ? (
-          /* ─── Clarity: options + button inside gray area ─── */
-          <div style={{
-            flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
-            padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
-          }}>
-            {published ? (
-              /* Collapsed: single visibility row that opens sheet */
+        {/* Bottom section — fades during publish transition */}
+        <div style={{
+          opacity: contentVisible ? 1 : 0,
+          transition: 'opacity 0.35s ease',
+          pointerEvents: contentVisible ? 'auto' : 'none',
+        }}>
+          {clarity ? (
+            /* ─── Clarity: options + button inside gray area ─── */
+            <div style={{
+              flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
+              padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
+            }}>
+              {published ? (
+                /* Collapsed: single visibility row that opens sheet */
+                <button
+                  onClick={() => setSheetOpen(true)}
+                  style={{
+                    background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
+                  }}
+                >
+                  <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {visibility === 'public'
+                      ? <GlobeSimple size={32} color="#0a0a0a" />
+                      : <LinkSimple size={32} color="#0a0a0a" />}
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
+                    <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
+                    <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
+                  </div>
+                  <CaretRight size={24} weight="bold" color="#0a0a0a" />
+                </button>
+              ) : (
+                /* Expanded: both options in a white card */
+                <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
+                  <button
+                    onClick={() => setVisibility('public')}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                    }}
+                  >
+                    <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#b0b0b0'} />
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#b0b0b0' }}>Public</span>
+                      <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#c5c5c5' }}>
+                        Visible on Explore, anyone can search for and view
+                      </span>
+                    </div>
+                    {visibility === 'public'
+                      ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
+                      : <Circle size={28} color="#d4d4d4" />}
+                  </button>
+
+                  <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
+
+                  <button
+                    onClick={() => setVisibility('unlisted')}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                    }}
+                  >
+                    <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0'} />
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <span style={{
+                        fontSize: 15, fontWeight: 500, lineHeight: '18px',
+                        color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0',
+                      }}>Unlisted</span>
+                      <span style={{
+                        fontSize: 13, fontWeight: 400, lineHeight: '16px',
+                        color: visibility === 'unlisted' ? '#525252' : '#c5c5c5',
+                      }}>
+                        Not visible on Explore or search, but anyone with the link can view
+                      </span>
+                    </div>
+                    {visibility === 'unlisted'
+                      ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
+                      : <Circle size={28} color="#d4d4d4" />}
+                  </button>
+                </div>
+              )}
+
+              <button
+                onClick={() => { published ? handleShare() : handlePublish() }}
+                style={{
+                  width: '100%', background: '#171717', color: '#fafafa',
+                  border: 'none', borderRadius: 999, padding: '18px 30px',
+                  fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                  boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+                }}
+              >
+                {published
+                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+              </button>
+            </div>
+          ) : (
+            /* ─── Minimal: collapsed visibility row ─── */
+            <div style={{
+              flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
+              padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
+            }}>
               <button
                 onClick={() => setSheetOpen(true)}
                 style={{
@@ -417,134 +576,42 @@ function ShareScreen({ mode }) {
                 </div>
                 <CaretRight size={24} weight="bold" color="#0a0a0a" />
               </button>
-            ) : (
-              /* Expanded: both options in a white card */
-              <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
-                <button
-                  onClick={() => setVisibility('public')}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    width: '100%', fontFamily: 'inherit', textAlign: 'left',
-                  }}
-                >
-                  <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#b0b0b0'} />
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#b0b0b0' }}>Public</span>
-                    <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#c5c5c5' }}>
-                      Visible on Explore, anyone can search for and view
-                    </span>
-                  </div>
-                  {visibility === 'public'
-                    ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
-                    : <Circle size={28} color="#d4d4d4" />}
-                </button>
 
-                <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
+              <button
+                onClick={() => { published ? handleShare() : handlePublish() }}
+                style={{
+                  width: '100%', background: '#171717', color: '#fafafa',
+                  border: 'none', borderRadius: 999, padding: '18px 30px',
+                  fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                  boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+                }}
+              >
+                {published
+                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+              </button>
+            </div>
+          )}
 
-                <button
-                  onClick={() => setVisibility('unlisted')}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    width: '100%', fontFamily: 'inherit', textAlign: 'left',
-                  }}
-                >
-                  <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0'} />
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <span style={{
-                      fontSize: 15, fontWeight: 500, lineHeight: '18px',
-                      color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0',
-                    }}>Unlisted</span>
-                    <span style={{
-                      fontSize: 13, fontWeight: 400, lineHeight: '16px',
-                      color: visibility === 'unlisted' ? '#525252' : '#c5c5c5',
-                    }}>
-                      Not visible on Explore or search, but anyone with the link can view
-                    </span>
-                  </div>
-                  {visibility === 'unlisted'
-                    ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
-                    : <Circle size={28} color="#d4d4d4" />}
-                </button>
-              </div>
-            )}
-
+          {/* Unpublish link */}
+          {published && (
             <button
-              onClick={() => { published ? handleShare() : setPublished(true) }}
+              onClick={handleUnpublish}
               style={{
-                width: '100%', background: '#171717', color: '#fafafa',
-                border: 'none', borderRadius: 999, padding: '18px 30px',
-                fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-                boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+                background: 'none', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                gap: 8, padding: '20px 0 34px', fontFamily: 'inherit',
+                fontSize: 15, fontWeight: 500, color: '#ef4444',
               }}
             >
-              {published
-                ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+              <LockSimple size={20} color="#ef4444" />
+              Unpublish your app
             </button>
-          </div>
-        ) : (
-          /* ─── Minimal: collapsed visibility row ─── */
-          <div style={{
-            flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
-            padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
-          }}>
-            <button
-              onClick={() => setSheetOpen(true)}
-              style={{
-                background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
-                display: 'flex', alignItems: 'center', gap: 12,
-                cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
-              }}
-            >
-              <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {visibility === 'public'
-                  ? <GlobeSimple size={32} color="#0a0a0a" />
-                  : <LinkSimple size={32} color="#0a0a0a" />}
-              </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-                <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
-                <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
-              </div>
-              <CaretRight size={24} weight="bold" color="#0a0a0a" />
-            </button>
+          )}
 
-            <button
-              onClick={() => { published ? handleShare() : setPublished(true) }}
-              style={{
-                width: '100%', background: '#171717', color: '#fafafa',
-                border: 'none', borderRadius: 999, padding: '18px 30px',
-                fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-                boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-              }}
-            >
-              {published
-                ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
-            </button>
-          </div>
-        )}
-
-        {/* Unpublish link */}
-        {published && (
-          <button
-            onClick={() => setPublished(false)}
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: 8, padding: '20px 0 34px', fontFamily: 'inherit',
-              fontSize: 15, fontWeight: 500, color: '#ef4444',
-            }}
-          >
-            <LockSimple size={20} color="#ef4444" />
-            Unpublish your app
-          </button>
-        )}
-
-        {!published && <div style={{ height: 34, flexShrink: 0 }} />}
+          {!published && <div style={{ height: 34, flexShrink: 0 }} />}
+        </div>
       </div>
 
       {(!clarity || published) && (
