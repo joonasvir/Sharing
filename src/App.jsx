@@ -878,58 +878,61 @@ function ShareScreen({ mode, screen }) {
   )
 }
 
-/* ─── Mobile Controls Dropdown ─── */
+/* ─── Mobile Controls ─── */
 
 function MobileControls({ mode, onModeChange, screen, onScreenChange }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50 }}>
-      {/* Trigger button */}
-      <div style={{
-        display: 'flex', justifyContent: 'center', padding: '10px 0 0',
-      }}>
-        <button
-          onClick={() => setOpen(!open)}
+    <>
+      {/* Floating trigger pill */}
+      <button
+        onClick={() => setOpen(true)}
+        style={{
+          position: 'fixed', bottom: 24, left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 40,
+          background: '#0a0a0a',
+          border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 999,
+          padding: '12px 20px',
+          fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.7)',
+          cursor: 'pointer', fontFamily: 'inherit',
+          display: open ? 'none' : 'flex', alignItems: 'center', gap: 8,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+        }}
+      >
+        Controls
+        <CaretRight size={12} weight="bold" color="rgba(255,255,255,0.4)" />
+      </button>
+
+      {/* Full-screen overlay */}
+      <div
+        onClick={() => setOpen(false)}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 50,
+          background: 'rgba(0,0,0,0.85)',
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
           style={{
-            background: 'rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 20,
-            padding: '8px 16px',
-            fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)',
-            cursor: 'pointer', fontFamily: 'inherit',
-            display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'all 0.2s ease',
+            width: '100%', maxWidth: 320,
+            padding: '24px 20px',
+            background: 'rgba(255,255,255,0.06)',
+            borderRadius: 28,
+            border: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex', flexDirection: 'column', gap: 20,
+            transform: open ? 'scale(1)' : 'scale(0.95)',
+            transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+            fontFamily: '"Selecta", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
+            color: '#fff',
           }}
         >
-          Controls
-          <CaretRight
-            size={12} weight="bold" color="rgba(255,255,255,0.4)"
-            style={{
-              transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s ease',
-            }}
-          />
-        </button>
-      </div>
-      {/* Dropdown panel */}
-      <div style={{
-        overflow: 'hidden',
-        maxHeight: open ? 300 : 0,
-        opacity: open ? 1 : 0,
-        transition: 'all 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        padding: '0 16px',
-      }}>
-        <div style={{
-          marginTop: 8,
-          background: 'rgba(255,255,255,0.06)',
-          backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
-          borderRadius: 20,
-          border: '1px solid rgba(255,255,255,0.08)',
-          padding: '16px 16px',
-          display: 'flex', flexDirection: 'column', gap: 16,
-        }}>
           <SegmentedControl
             label="Layout"
             options={[
@@ -949,9 +952,22 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange }) {
             value={screen}
             onChange={onScreenChange}
           />
+          <button
+            onClick={() => setOpen(false)}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none', borderRadius: 12,
+              padding: '14px', width: '100%',
+              fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.5)',
+              cursor: 'pointer', fontFamily: 'inherit',
+              marginTop: 4,
+            }}
+          >
+            Close
+          </button>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
