@@ -107,7 +107,9 @@ function AppCarousel({ published, isInvite, visibility }) {
                 opacity: showCard ? 0.4 : 0,
                 transition: `opacity 0.4s ease ${delay}s`,
               }}>
-                <LockSimple size={18} color="#0a0a0a" />
+                {isMain && published && visibility === 'public'
+                  ? <GlobeSimple size={18} color="#0a0a0a" />
+                  : <LockSimple size={18} color="#0a0a0a" />}
               </div>
 
               {/* Orb — shared element for main card */}
