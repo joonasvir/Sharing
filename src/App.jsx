@@ -308,6 +308,7 @@ function ShareScreen({ mode }) {
   const [visibility, setVisibility] = useState('public')
   const [published, setPublished] = useState(false)
   const [publishing, setPublishing] = useState(false)
+  const [unpublishing, setUnpublishing] = useState(false)
   const clarity = mode === 'clarity'
 
   const isShare = activeTab === 'share'
@@ -323,7 +324,11 @@ function ShareScreen({ mode }) {
   }
 
   const handleUnpublish = () => {
-    setPublished(false)
+    setUnpublishing(true)
+    setTimeout(() => {
+      setUnpublishing(false)
+      setPublished(false)
+    }, 1200)
   }
 
   const handleShare = async () => {
@@ -348,10 +353,10 @@ function ShareScreen({ mode }) {
       }}>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Hero area — flex-grows on share tab (centers content), compact on invite */}
+        {/* Hero area — always flex-grows, invite sections push it smaller */}
         <div style={{
-          flexGrow: isShare ? 1 : 0,
-          flexShrink: isShare ? 1 : 0,
+          flexGrow: 1,
+          flexShrink: 1,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -360,7 +365,7 @@ function ShareScreen({ mode }) {
           gap: 12,
           textAlign: 'center',
           minHeight: 0,
-          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: 'padding 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
           {/* App icon row — main orb pushes up into row on publish */}
           <div style={{
@@ -393,7 +398,7 @@ function ShareScreen({ mode }) {
                         width: size, height: size,
                         borderRadius: '50%', objectFit: 'cover',
                         display: 'block',
-                        opacity: publishing ? 0.7 : 1,
+                        opacity: publishing || unpublishing ? 0.7 : 1,
                         transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                       }}
                     />
@@ -407,7 +412,7 @@ function ShareScreen({ mode }) {
                       backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: isInvite || publishing ? 0 : 1,
+                      opacity: isInvite || publishing || unpublishing ? 0 : 1,
                       transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                     }}>
                       {published && visibility === 'public'
@@ -494,7 +499,7 @@ function ShareScreen({ mode }) {
               position: 'absolute', inset: 0,
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               justifyContent: 'center', padding: '0 30px',
-              opacity: isShare && published && !publishing ? 1 : 0,
+              opacity: isShare && published && !publishing && !unpublishing ? 1 : 0,
               transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
               pointerEvents: 'none',
             }}>
@@ -503,6 +508,22 @@ function ShareScreen({ mode }) {
               </h1>
               <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
                 If you want to use it with your friends only, use the Invite tab.
+              </p>
+            </div>
+            {/* Unpublishing copy — overlaps */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+              justifyContent: 'center', padding: '0 30px',
+              opacity: isShare && unpublishing ? 1 : 0,
+              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              pointerEvents: 'none',
+            }}>
+              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                Unpublishing...
+              </h1>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                Your mini-app is being made private
               </p>
             </div>
             {/* Invite copy — overlaps */}
@@ -526,9 +547,8 @@ function ShareScreen({ mode }) {
 
         {/* Invite middle: search + user list */}
         <div style={{
-          flexGrow: isInvite ? 1 : 0,
-          flexShrink: isInvite ? 1 : 0,
-          maxHeight: isInvite ? 9999 : 0,
+          flexShrink: 0,
+          maxHeight: isInvite ? 500 : 0,
           opacity: isInvite ? 1 : 0,
           overflow: 'hidden',
           display: 'flex',
@@ -699,38 +719,41 @@ function ShareScreen({ mode }) {
 
             {/* Action button */}
             <button
-              onClick={() => { !publishing && (published ? handleShare() : handlePublish()) }}
+              onClick={() => { !publishing && !unpublishing && (published ? handleShare() : handlePublish()) }}
               style={{
                 width: '100%', background: '#171717', color: '#fafafa',
                 border: 'none', borderRadius: 999, padding: '18px 30px',
                 fontSize: 15, fontWeight: 500, lineHeight: '20px',
-                cursor: publishing ? 'default' : 'pointer',
+                cursor: publishing || unpublishing ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
                 boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-                opacity: publishing ? 0.5 : 1,
+                opacity: publishing || unpublishing ? 0.5 : 1,
                 transition: 'opacity 0.3s ease',
               }}
             >
               {publishing
                 ? 'Publishing...'
-                : published
-                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+                : unpublishing
+                  ? 'Unpublishing...'
+                  : published
+                    ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                    : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
             </button>
           </div>
 
           {/* Unpublish link */}
           <div style={{
             maxHeight: published ? 60 : 0,
-            opacity: published ? 1 : 0,
+            opacity: published && !unpublishing ? 1 : 0,
             overflow: 'hidden',
             transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           }}>
             <button
-              onClick={handleUnpublish}
+              onClick={() => !unpublishing && handleUnpublish()}
               style={{
                 width: '100%',
-                background: 'none', border: 'none', cursor: 'pointer',
+                background: 'none', border: 'none',
+                cursor: unpublishing ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 gap: 8, padding: '16px 0 28px', fontFamily: 'inherit',
                 fontSize: 15, fontWeight: 500, color: '#ef4444',
