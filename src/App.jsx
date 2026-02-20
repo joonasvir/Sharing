@@ -400,11 +400,12 @@ function ShareScreen({ mode, screen }) {
       >
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Top spacer — small fixed gap, transitions between tabs */}
+        {/* Top spacer — pushes orb+copy toward center on share, collapses on invite */}
         <div style={{
-          height: isInvite ? 16 : 40,
-          flexShrink: 0,
-          transition: `height ${ease}`,
+          flexGrow: isInvite ? 0 : 1,
+          flexBasis: isInvite ? 16 : 0,
+          flexShrink: 1,
+          transition: `all ${ease}`,
         }} />
 
         {/* App icon row — shared element, stays in place */}
@@ -516,12 +517,12 @@ function ShareScreen({ mode, screen }) {
               width: '50%', height: '100%',
               display: 'flex', flexDirection: 'column',
             }}>
-              {/* Share copy — near top, close to the orb */}
+              {/* Share copy — right below orb */}
               <div style={{
-                flex: 1, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'flex-start',
+                flexShrink: 0, display: 'flex', flexDirection: 'column',
+                alignItems: 'center',
                 textAlign: 'center', padding: '20px 30px 0', gap: 12,
-                position: 'relative', minHeight: 0,
+                position: 'relative',
               }}>
                 {/* Unpublished copy — takes layout space */}
                 <div style={{
@@ -540,7 +541,7 @@ function ShareScreen({ mode, screen }) {
                 <div style={{
                   position: 'absolute', inset: 0,
                   display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-                  justifyContent: 'flex-start', padding: '20px 30px 0',
+                  padding: '20px 30px 0',
                   opacity: published ? 1 : 0,
                   transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
                   pointerEvents: published ? 'auto' : 'none',
@@ -575,6 +576,9 @@ function ShareScreen({ mode, screen }) {
                   )}
                 </div>
               </div>
+
+              {/* Spacer — pushes controls to bottom */}
+              <div style={{ flex: 1 }} />
 
               {/* Share bottom controls */}
               <div style={{ flexShrink: 0, padding: '0 20px' }}>
@@ -635,7 +639,7 @@ function ShareScreen({ mode, screen }) {
                     </div>
                   )}
 
-                  {/* Unpublished minimal: collapsed visibility row above button */}
+                  {/* Unpublished minimal: collapsed visibility row */}
                   <div style={{
                     maxHeight: (!clarity && !published) ? 100 : 0,
                     opacity: (!clarity && !published) ? 1 : 0,
@@ -664,32 +668,13 @@ function ShareScreen({ mode, screen }) {
                     </button>
                   </div>
 
-                  {/* Action button */}
-                  <button
-                    onClick={() => { !publishing && !unpublishing && (published ? handleShare() : handlePublish()) }}
-                    style={{
-                      width: '100%', background: '#171717', color: '#fafafa',
-                      border: 'none', borderRadius: 999, padding: '18px 30px',
-                      fontSize: 15, fontWeight: 500, lineHeight: '20px',
-                      cursor: publishing || unpublishing ? 'default' : 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-                      boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-                    }}
-                  >
-                    {publishing
-                      ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
-                      : published
-                        ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                        : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
-                  </button>
-
-                  {/* Published: compact visibility row below button */}
+                  {/* Published: compact visibility row above button */}
                   <div style={{
                     maxHeight: published ? 80 : 0,
                     opacity: published ? 1 : 0,
                     overflow: 'hidden',
                     transition: `all ${ease}`,
-                    marginTop: published ? 12 : 0,
+                    marginBottom: published ? 12 : 0,
                   }}>
                     <button
                       onClick={() => setSheetOpen(true)}
@@ -711,6 +696,25 @@ function ShareScreen({ mode, screen }) {
                       <CaretRight size={16} weight="bold" color="#0a0a0a" style={{ opacity: 0.7 }} />
                     </button>
                   </div>
+
+                  {/* Action button */}
+                  <button
+                    onClick={() => { !publishing && !unpublishing && (published ? handleShare() : handlePublish()) }}
+                    style={{
+                      width: '100%', background: '#171717', color: '#fafafa',
+                      border: 'none', borderRadius: 999, padding: '18px 30px',
+                      fontSize: 15, fontWeight: 500, lineHeight: '20px',
+                      cursor: publishing || unpublishing ? 'default' : 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                      boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+                    }}
+                  >
+                    {publishing
+                      ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
+                      : published
+                        ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                        : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+                  </button>
                 </div>
 
                 {/* Unpublish link */}
