@@ -391,59 +391,84 @@ function ShareScreen({ mode }) {
 
         {/* Bottom section */}
         {clarity ? (
-          /* ─── Clarity: inline options ─── */
-          <div style={{ flexShrink: 0, margin: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ background: '#f5f5f5', borderRadius: 28, padding: 12, display: 'flex', flexDirection: 'column' }}>
-              {/* Public */}
+          /* ─── Clarity: options + button inside gray area ─── */
+          <div style={{
+            flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
+            padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
+          }}>
+            {published ? (
+              /* Collapsed: single visibility row that opens sheet */
               <button
-                onClick={() => setVisibility('public')}
+                onClick={() => setSheetOpen(true)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                  background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
                 }}
               >
-                <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#b0b0b0'} />
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#b0b0b0' }}>Public</span>
-                  <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#c5c5c5' }}>
-                    Visible on Explore, anyone can search for and view
-                  </span>
+                <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {visibility === 'public'
+                    ? <GlobeSimple size={32} color="#0a0a0a" />
+                    : <LinkSimple size={32} color="#0a0a0a" />}
                 </div>
-                {visibility === 'public'
-                  ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
-                  : <Circle size={28} color="#d4d4d4" />}
-              </button>
-
-              <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
-
-              {/* Unlisted */}
-              <button
-                onClick={() => setVisibility('unlisted')}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  width: '100%', fontFamily: 'inherit', textAlign: 'left',
-                }}
-              >
-                <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0'} />
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <span style={{
-                    fontSize: 15, fontWeight: 500, lineHeight: '18px',
-                    color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0',
-                  }}>Unlisted</span>
-                  <span style={{
-                    fontSize: 13, fontWeight: 400, lineHeight: '16px',
-                    color: visibility === 'unlisted' ? '#525252' : '#c5c5c5',
-                  }}>
-                    Not visible on Explore or search, but anyone with the link can view
-                  </span>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
+                  <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
+                  <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
                 </div>
-                {visibility === 'unlisted'
-                  ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
-                  : <Circle size={28} color="#d4d4d4" />}
+                <CaretRight size={24} weight="bold" color="#0a0a0a" />
               </button>
-            </div>
+            ) : (
+              /* Expanded: both options in a white card */
+              <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
+                <button
+                  onClick={() => setVisibility('public')}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                  }}
+                >
+                  <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#b0b0b0'} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#b0b0b0' }}>Public</span>
+                    <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#c5c5c5' }}>
+                      Visible on Explore, anyone can search for and view
+                    </span>
+                  </div>
+                  {visibility === 'public'
+                    ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
+                    : <Circle size={28} color="#d4d4d4" />}
+                </button>
+
+                <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
+
+                <button
+                  onClick={() => setVisibility('unlisted')}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                  }}
+                >
+                  <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0'} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <span style={{
+                      fontSize: 15, fontWeight: 500, lineHeight: '18px',
+                      color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0',
+                    }}>Unlisted</span>
+                    <span style={{
+                      fontSize: 13, fontWeight: 400, lineHeight: '16px',
+                      color: visibility === 'unlisted' ? '#525252' : '#c5c5c5',
+                    }}>
+                      Not visible on Explore or search, but anyone with the link can view
+                    </span>
+                  </div>
+                  {visibility === 'unlisted'
+                    ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
+                    : <Circle size={28} color="#d4d4d4" />}
+                </button>
+              </div>
+            )}
 
             <button
               onClick={() => { published ? handleShare() : setPublished(true) }}
@@ -522,7 +547,7 @@ function ShareScreen({ mode }) {
         {!published && <div style={{ height: 34, flexShrink: 0 }} />}
       </div>
 
-      {!clarity && (
+      {(!clarity || published) && (
         <VisibilitySheet
           open={sheetOpen}
           visibility={visibility}
