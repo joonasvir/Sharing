@@ -742,18 +742,16 @@ function ShareScreen({ mode }) {
             >
               {publishing
                 ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
-                : unpublishing
-                  ? <><LockSimple size={22} color="#fafafa" /> Unpublishing...</>
-                  : published
-                    ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                    : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+                : published
+                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
             </button>
           </div>
 
           {/* Unpublish link */}
           <div style={{
             maxHeight: published ? 60 : 0,
-            opacity: published && !unpublishing ? 1 : 0,
+            opacity: published ? 1 : 0,
             overflow: 'hidden',
             transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           }}>
@@ -769,7 +767,7 @@ function ShareScreen({ mode }) {
               }}
             >
               <LockSimple size={20} color="#ef4444" />
-              Unpublish your app
+              {unpublishing ? 'Unpublishing...' : 'Unpublish your app'}
             </button>
           </div>
 
