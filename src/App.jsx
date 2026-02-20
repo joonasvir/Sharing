@@ -12,6 +12,16 @@ function GlobeIcon({ size = 32, color = '#0a0a0a' }) {
   )
 }
 
+function LinkIcon({ size = 40, color = '#0a0a0a' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+      <path d="M17.5 22.5L22.5 17.5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <path d="M14.5 25.5L11.46 28.54C10.09 29.91 7.91 29.91 6.54 28.54C5.17 27.17 5.17 24.99 6.54 23.62L11.5 18.5C12.87 17.13 15.05 17.13 16.42 18.5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <path d="M25.5 14.5L28.54 11.46C29.91 10.09 29.91 7.91 28.54 6.54C27.17 5.17 24.99 5.17 23.62 6.54L18.5 11.5C17.13 12.87 17.13 15.05 18.5 16.42" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function ShareIcon({ size = 22, color = '#191919' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -41,12 +51,37 @@ function ChevronRight({ size = 24, color = '#0a0a0a' }) {
   )
 }
 
+function ChevronLeft({ size = 24, color = '#0a0a0a' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M15 6L9 12L15 18" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function CloudUploadIcon({ size = 24, color = '#fafafa' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <path d="M12 16V8" stroke={color} strokeWidth="2" strokeLinecap="round" />
       <path d="M9 11L12 8L15 11" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M20 16.7428C21.2215 15.734 22 14.2079 22 12.5C22 9.46243 19.5376 7 16.5 7C16.2815 7 16.0771 6.886 15.9661 6.69774C14.6621 4.48484 12.2544 3 9.5 3C5.35786 3 2 6.35786 2 10.5C2 12.5661 2.83545 14.4371 4.18695 15.7935" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function CheckIcon({ size = 32 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="16" fill="#0a0a0a" />
+      <path d="M10 16.5L14 20.5L22 12.5" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function EmptyCircle({ size = 32 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="15" stroke="#d4d4d4" strokeWidth="1.5" />
     </svg>
   )
 }
@@ -158,11 +193,166 @@ function Sidebar({ mode, onModeChange }) {
   )
 }
 
+/* ─── Visibility Sheet ─── */
+
+function VisibilitySheet({ open, visibility, onSelect, onClose }) {
+  return (
+    <>
+      {/* Scrim */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0,0,0,0.5)',
+          zIndex: 20,
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
+        }}
+      />
+      {/* Sheet */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: '#fff',
+        borderRadius: '32px 32px 46px 46px',
+        zIndex: 30,
+        transform: open ? 'translateY(0)' : 'translateY(100%)',
+        transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        padding: '20px 20px 40px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 20,
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          position: 'relative',
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              border: 'none',
+              background: '#fff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+              flexShrink: 0,
+              zIndex: 1,
+            }}
+          >
+            <ChevronLeft />
+          </button>
+          <span style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            fontSize: 18,
+            fontWeight: 500,
+            color: '#0a0a0a',
+          }}>
+            Set visibility
+          </span>
+        </div>
+
+        {/* Options */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {/* Public */}
+          <button
+            onClick={() => onSelect('public')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '24px 20px 24px 16px',
+              borderRadius: 24,
+              border: visibility === 'public' ? 'none' : '1px solid rgba(0,0,0,0.08)',
+              background: visibility === 'public' ? '#f5f5f5' : '#fff',
+              cursor: 'pointer',
+              width: '100%',
+              fontFamily: 'inherit',
+              textAlign: 'left',
+            }}
+          >
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ padding: 7, flexShrink: 0 }}>
+                <GlobeIcon size={40} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#0a0a0a' }}>
+                  Public
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#525252' }}>
+                  Visible on Explore, anyone can search for and view
+                </span>
+              </div>
+            </div>
+            {visibility === 'public' ? <CheckIcon /> : <EmptyCircle />}
+          </button>
+
+          {/* Unlisted */}
+          <button
+            onClick={() => onSelect('unlisted')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '24px 20px 24px 16px',
+              borderRadius: 24,
+              border: visibility === 'unlisted' ? 'none' : '1px solid rgba(0,0,0,0.08)',
+              background: visibility === 'unlisted' ? '#f5f5f5' : '#fff',
+              cursor: 'pointer',
+              width: '100%',
+              fontFamily: 'inherit',
+              textAlign: 'left',
+            }}
+          >
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ padding: 7, flexShrink: 0 }}>
+                <LinkIcon size={40} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{
+                  fontSize: 18, fontWeight: 500, lineHeight: '22px',
+                  color: visibility === 'unlisted' ? '#0a0a0a' : '#737373',
+                }}>
+                  Unlisted
+                </span>
+                <span style={{
+                  fontSize: 14, fontWeight: 400, lineHeight: '16px',
+                  color: visibility === 'unlisted' ? '#525252' : '#737373',
+                }}>
+                  Not visible on Explore or search, anyone with the link can view
+                </span>
+              </div>
+            </div>
+            {visibility === 'unlisted' ? <CheckIcon /> : <EmptyCircle />}
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
+
 /* ─── Share Screen ─── */
 
 function ShareScreen({ mode }) {
   const [activeTab, setActiveTab] = useState('share')
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [visibility, setVisibility] = useState('public')
   const minimal = mode === 'minimal'
+
+  const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
 
   return (
     <div style={{
@@ -263,7 +453,7 @@ function ShareScreen({ mode }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: minimal ? '0 40px 0' : '0 40px',
+          padding: '0 40px',
           textAlign: 'center',
           gap: 25,
         }}>
@@ -303,7 +493,7 @@ function ShareScreen({ mode }) {
         {/* Bottom section */}
         <div style={{
           flexShrink: 0,
-          margin: minimal ? '0 20px 34px' : '0 20px 34px',
+          margin: '0 20px 34px',
           background: minimal ? 'transparent' : '#f5f5f5',
           borderRadius: 32,
           padding: minimal ? '0' : 20,
@@ -313,24 +503,27 @@ function ShareScreen({ mode }) {
           transition: 'all 0.3s ease',
         }}>
           {!minimal && (
-            <button style={{
-              background: '#fff',
-              borderRadius: 24,
-              padding: '20px 20px 20px 12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              cursor: 'pointer',
-              border: 'none',
-              width: '100%',
-              fontFamily: 'inherit',
-            }}>
+            <button
+              onClick={() => setSheetOpen(true)}
+              style={{
+                background: '#fff',
+                borderRadius: 24,
+                padding: '20px 20px 20px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                cursor: 'pointer',
+                border: 'none',
+                width: '100%',
+                fontFamily: 'inherit',
+              }}
+            >
               <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5 }}>
                 <GlobeIcon size={32} />
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
                 <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
-                <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>Public</span>
+                <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
               </div>
               <div style={{ width: 24, height: 24, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <ChevronRight />
@@ -361,6 +554,17 @@ function ShareScreen({ mode }) {
           </button>
         </div>
       </div>
+
+      {/* Visibility bottom sheet */}
+      <VisibilitySheet
+        open={sheetOpen}
+        visibility={visibility}
+        onSelect={(v) => {
+          setVisibility(v)
+          setSheetOpen(false)
+        }}
+        onClose={() => setSheetOpen(false)}
+      />
     </div>
   )
 }
