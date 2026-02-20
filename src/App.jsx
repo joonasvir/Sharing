@@ -13,6 +13,8 @@ import {
   MagnifyingGlass,
   Plus,
   Broadcast,
+  Copy,
+  SpinnerGap,
 } from '@phosphor-icons/react'
 
 const APP_ORBS = [
@@ -225,6 +227,7 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange, anim, onAnimChang
         options={[
           { label: 'v1: Clarity', value: 'clarity' },
           { label: 'v2: Minimal', value: 'minimal' },
+          { label: 'v3: Link', value: 'link' },
         ]}
         value={mode}
         onChange={onModeChange}
@@ -422,6 +425,9 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
   const [updatesPublished, setUpdatesPublished] = useState(false)
   const [exploreEnabled, setExploreEnabled] = useState(false)
   const clarity = mode === 'clarity'
+  const isLink = mode === 'link'
+  const [linkState, setLinkState] = useState('idle')
+  const linkTimerRef = useRef(null)
   const isUpdates = screen === 'updates'
   const hasUnpublishedUpdates = isUpdates && !updatesPublished
 
@@ -430,7 +436,14 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
     setPublishing(false)
     setUnpublishing(false)
     setUpdatesPublished(false)
+    setLinkState('idle')
+    if (linkTimerRef.current) clearTimeout(linkTimerRef.current)
   }, [screen])
+
+  useEffect(() => {
+    setLinkState('idle')
+    if (linkTimerRef.current) clearTimeout(linkTimerRef.current)
+  }, [mode])
 
   const isShare = activeTab === 'share'
   const isInvite = activeTab === 'invite'
@@ -451,6 +464,13 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
       setUnpublishing(false)
       setPublished(false)
     }, 1800)
+  }
+
+  const handleGetLink = () => {
+    setLinkState('generating')
+    linkTimerRef.current = setTimeout(() => {
+      setLinkState('generated')
+    }, 2000)
   }
 
   const handleShare = async () => {
@@ -607,6 +627,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       <div
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -675,10 +696,10 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     transition: `opacity ${anim.copyFadeDuration}s cubic-bezier(0.32, 0.72, 0, 1) ${!published ? anim.copyFadeDelay + 's' : '0s'}`,
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                      Your mini-app is private. Publish it to share
+                      {isLink ? 'Your mini-app is private. Publish it to share it with the world' : 'Your mini-app is private. Publish it to share'}
                     </h1>
                     <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                      Only your app is shared, never your personal data
+                      {isLink ? 'None of your app data is shared upon publishing. Users will see an empty version of your app.' : 'Only your app is shared, never your personal data'}
                     </p>
                   </div>
                   {/* Published copy — fades out first, fades in after delay */}
@@ -761,11 +782,11 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
 
                   {/* Collapsed visibility row — smoothly sizes between unpublished and published */}
                   <div style={{
-                    maxHeight: (published || !clarity) ? 100 : 0,
-                    opacity: (published || !clarity) ? 1 : 0,
+                    maxHeight: ((published || !clarity) && !(isLink && !published)) ? 100 : 0,
+                    opacity: ((published || !clarity) && !(isLink && !published)) ? 1 : 0,
                     overflow: 'hidden',
                     transition: `all ${ease}`,
-                    marginBottom: (published || !clarity) ? (published ? 12 : 16) : 0,
+                    marginBottom: ((published || !clarity) && !(isLink && !published)) ? (published ? 12 : 16) : 0,
                   }}>
                     <button
                       onClick={() => setSheetOpen(true)}
@@ -803,6 +824,55 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     </button>
                   </div>
 
+                  {/* Link mode: disclaimer + private share link card */}
+                  {isLink && !published && (
+                    <>
+                      <p style={{
+                        fontSize: 12, fontWeight: 400, lineHeight: '16px',
+                        color: '#a3a3a3', textAlign: 'center', padding: '0 8px',
+                        marginBottom: 16,
+                      }}>
+                        None of your data is shared upon publish or share
+                      </p>
+                      <div style={{
+                        maxHeight: linkState !== 'idle' ? 300 : 0,
+                        opacity: linkState !== 'idle' ? 1 : 0,
+                        overflow: 'hidden',
+                        transition: `all ${ease}`,
+                        marginBottom: linkState !== 'idle' ? 12 : 0,
+                      }}>
+                        <div style={{
+                          background: '#fff', borderRadius: 20, padding: 16,
+                          display: 'flex', flexDirection: 'column', gap: 10,
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <LinkSimple size={18} color="#0a0a0a" />
+                            <span style={{ fontSize: 15, fontWeight: 600, color: '#0a0a0a' }}>Private share link</span>
+                          </div>
+                          <p style={{ fontSize: 13, fontWeight: 400, lineHeight: '17px', color: '#737373', margin: 0 }}>
+                            Private mini-apps are only visible to you and whoever you share the link to.
+                          </p>
+                          <div style={{
+                            background: '#f5f5f5', borderRadius: 12, padding: '12px 14px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          }}>
+                            {linkState === 'generating' ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <SpinnerGap size={16} color="#a3a3a3" style={{ animation: 'spin 1s linear infinite' }} />
+                                <span style={{ fontSize: 14, fontWeight: 400, color: '#a3a3a3' }}>Generating share link</span>
+                              </div>
+                            ) : (
+                              <>
+                                <span style={{ fontSize: 14, fontWeight: 500, color: '#0a0a0a' }}>wabi.ai/121212</span>
+                                <Copy size={18} color="#737373" style={{ cursor: 'pointer' }} />
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {/* Action button */}
                   <button
                     onClick={() => { !publishing && !unpublishing && (published && !hasUnpublishedUpdates ? handleShare() : handlePublish()) }}
@@ -821,8 +891,31 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                         ? <><CloudArrowUp size={22} color="#fafafa" /> Publish updates</>
                         : published
                           ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                          : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+                          : isLink
+                            ? <><Broadcast size={22} color="#fafafa" /> Publish mini-app</>
+                            : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
                   </button>
+
+                  {/* Get private share link — link mode, unpublished, idle */}
+                  <div style={{
+                    maxHeight: (isLink && !published && linkState === 'idle') ? 60 : 0,
+                    opacity: (isLink && !published && linkState === 'idle') ? 1 : 0,
+                    overflow: 'hidden',
+                    transition: `all ${ease}`,
+                    marginTop: (isLink && !published && linkState === 'idle') ? 8 : 0,
+                  }}>
+                    <button
+                      onClick={handleGetLink}
+                      style={{
+                        width: '100%', background: 'none', color: '#737373',
+                        border: 'none', padding: '14px 0',
+                        fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                        fontFamily: 'inherit', textAlign: 'center',
+                      }}
+                    >
+                      Get private share link
+                    </button>
+                  </div>
 
                   {/* Share old version button — updates state only */}
                   <div style={{
@@ -985,7 +1078,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
         </div>
       </div>
 
-      {(!clarity || published) && (
+      {(published || (!clarity && !isLink)) && (
         <VisibilitySheet
           open={sheetOpen}
           visibility={visibility}
@@ -1058,6 +1151,7 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange, anim, onAn
             options={[
               { label: 'v1: Clarity', value: 'clarity' },
               { label: 'v2: Minimal', value: 'minimal' },
+              { label: 'v3: Link', value: 'link' },
             ]}
             value={mode}
             onChange={onModeChange}
