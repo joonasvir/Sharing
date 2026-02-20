@@ -15,11 +15,11 @@ import {
 } from '@phosphor-icons/react'
 
 const APP_ORBS = [
-  { hue: 200 },
-  { hue: 60 },
-  { hue: 0, isMain: true },
-  { hue: 280 },
-  { hue: 120 },
+  { src: '/orb1.png' },
+  { src: '/orb2.png' },
+  { src: '/mainorb.png', isMain: true },
+  { src: '/orb3.png' },
+  { src: '/orb4.png' },
 ]
 
 const MOCK_USERS = [
@@ -425,7 +425,7 @@ function ShareScreen({ mode }) {
                   transition: `all ${ease}`,
                 }}>
                   <img
-                    src="/orb.png"
+                    src={orb.src}
                     alt=""
                     style={{
                       width: size, height: size,
@@ -462,7 +462,7 @@ function ShareScreen({ mode }) {
                     pointerEvents: 'none',
                   }}>
                     {[0, 1, 2].map((j) => (
-                      <img key={j} src="/orb.png" alt="" style={{
+                      <img key={j} src="/mainorb.png" alt="" style={{
                         width: 24, height: 24, borderRadius: '50%',
                         objectFit: 'cover', border: '2px solid #fff',
                         marginLeft: j > 0 ? -6 : 0,
@@ -476,12 +476,12 @@ function ShareScreen({ mode }) {
             return (
               <img
                 key={i}
-                src="/orb.png"
+                src={orb.src}
                 alt=""
                 style={{
                   width: size, height: size,
                   borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                  opacity: showSide ? 0.7 : 0,
+                  opacity: showSide ? 1 : 0,
                   transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
                   transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                 }}
@@ -717,7 +717,7 @@ function ShareScreen({ mode }) {
                     display: 'flex', alignItems: 'center', padding: '10px 0', gap: 12,
                   }}>
                     <img
-                      src="/orb.png"
+                      src="/mainorb.png"
                       alt=""
                       style={{
                         width: 42, height: 42, borderRadius: '50%',
