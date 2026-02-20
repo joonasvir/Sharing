@@ -294,7 +294,7 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published }) {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#0a0a0a' }}>Public</span>
               <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#525252' }}>
-                Discoverable by everyone on Explore
+                Discoverable by everyone on Explore and via share link
               </span>
             </div>
             <div style={{ flexShrink: 0 }}>
@@ -728,7 +728,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                             <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#949494' }}>Public</span>
                             <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#aaaaaa' }}>
-                              Discoverable by everyone on Explore
+                              Discoverable by everyone on Explore and via share link
                             </span>
                           </div>
                           {visibility === 'public'
