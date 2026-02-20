@@ -467,12 +467,11 @@ function ShareScreen({ mode }) {
                       transition: `opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${isInvite ? '0.1s' : '0s'}`,
                       pointerEvents: 'none',
                     }}>
-                      {[200, 100, 320].map((hue, j) => (
+                      {[0, 1, 2].map((j) => (
                         <img key={j} src="/orb.png" alt="" style={{
                           width: 24, height: 24, borderRadius: '50%',
                           objectFit: 'cover', border: '2px solid #fff',
                           marginLeft: j > 0 ? -6 : 0,
-                          filter: `hue-rotate(${hue}deg) brightness(0.8)`,
                         }} />
                       ))}
                     </div>
@@ -488,8 +487,7 @@ function ShareScreen({ mode }) {
                   style={{
                     width: size, height: size,
                     borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                    filter: `hue-rotate(${orb.hue}deg)`,
-                    opacity: showSide ? 0.85 : 0,
+                    opacity: showSide ? 0.7 : 0,
                     transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
                     transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                   }}
@@ -590,7 +588,7 @@ function ShareScreen({ mode }) {
                   style={{
                     width: 42, height: 42, borderRadius: '50%',
                     objectFit: 'cover', flexShrink: 0,
-                    filter: `hue-rotate(${user.hue}deg)`,
+                    filter: `hue-rotate(${user.hue}deg) saturate(0.6)`,
                   }}
                 />
                 <div style={{ flex: 1, textAlign: 'left' }}>
