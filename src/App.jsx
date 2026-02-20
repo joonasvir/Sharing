@@ -519,7 +519,7 @@ function ShareScreen({ mode }) {
               }}
             >
               <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5 }}>
-                <GlobeIcon size={32} />
+                {visibility === 'public' ? <GlobeIcon size={32} /> : <LinkIcon size={32} />}
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
                 <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
