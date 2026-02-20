@@ -699,7 +699,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                         >
                           <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#949494'} />
                           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#949494' }}>Public</span>
+                            <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#949494' }}>Public</span>
                             <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#aaaaaa' }}>
                               Discoverable by everyone on Explore
                             </span>
