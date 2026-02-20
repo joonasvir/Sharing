@@ -516,11 +516,11 @@ function ShareScreen({ mode, screen }) {
               width: '50%', height: '100%',
               display: 'flex', flexDirection: 'column',
             }}>
-              {/* Share copy — centered in remaining space */}
+              {/* Share copy — near top, close to the orb */}
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                textAlign: 'center', padding: '0 30px', gap: 12,
+                alignItems: 'center', justifyContent: 'flex-start',
+                textAlign: 'center', padding: '20px 30px 0', gap: 12,
                 position: 'relative', minHeight: 0,
               }}>
                 {/* Unpublished copy — takes layout space */}
@@ -540,7 +540,7 @@ function ShareScreen({ mode, screen }) {
                 <div style={{
                   position: 'absolute', inset: 0,
                   display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-                  justifyContent: 'center', padding: '0 30px',
+                  justifyContent: 'flex-start', padding: '20px 30px 0',
                   opacity: published ? 1 : 0,
                   transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
                   pointerEvents: published ? 'auto' : 'none',
