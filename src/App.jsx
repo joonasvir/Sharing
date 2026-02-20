@@ -5,13 +5,14 @@ import {
   Export,
   UserPlus,
   CaretRight,
-  CaretLeft,
+
   CloudArrowUp,
   LockSimple,
   CheckCircle,
   Circle,
   MagnifyingGlass,
   Plus,
+  Broadcast,
 } from '@phosphor-icons/react'
 
 const APP_ORBS = [
@@ -141,7 +142,7 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
       />
       <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 -4px' }} />
       <SegmentedControl
-        label="Screen"
+        label="State of app"
         options={[
           { label: 'First publish', value: 'first-publish' },
           { label: 'App has updates', value: 'updates' },
@@ -171,22 +172,14 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
         background: '#fff', borderRadius: '32px 32px 46px 46px', zIndex: 30,
         transform: open ? 'translateY(0)' : 'translateY(100%)',
         transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        padding: '20px 20px 40px', display: 'flex', flexDirection: 'column', gap: 20,
+        padding: '12px 20px 40px', display: 'flex', flexDirection: 'column', gap: 20,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-          <button
-            onClick={onClose}
-            style={{
-              width: 48, height: 48, borderRadius: 24, border: 'none', background: '#fff',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-              flexShrink: 0, zIndex: 1,
-            }}
-          >
-            <CaretLeft size={24} weight="bold" color="#0a0a0a" />
-          </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div style={{
+            width: 36, height: 5, borderRadius: 3,
+            background: 'rgba(0,0,0,0.15)',
+          }} />
           <span style={{
-            position: 'absolute', left: 0, right: 0, textAlign: 'center',
             fontSize: 18, fontWeight: 500, color: '#0a0a0a',
           }}>
             Set visibility
@@ -197,53 +190,53 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
           <button
             onClick={() => onSelect('public')}
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              display: 'flex', alignItems: 'center', gap: 12,
               padding: '24px 20px 24px 16px', borderRadius: 24,
               border: visibility === 'public' ? 'none' : '1px solid rgba(0,0,0,0.08)',
               background: visibility === 'public' ? '#f5f5f5' : '#fff',
               cursor: 'pointer', width: '100%', fontFamily: 'inherit', textAlign: 'left',
             }}
           >
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div style={{ padding: 7, flexShrink: 0 }}>
-                <GlobeSimple size={40} color="#0a0a0a" />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#0a0a0a' }}>Public</span>
-                <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#525252' }}>
-                  Discoverable by everyone on Explore
-                </span>
-              </div>
+            <div style={{ padding: 7, flexShrink: 0 }}>
+              <GlobeSimple size={40} color="#0a0a0a" />
             </div>
-            {visibility === 'public'
-              ? <CheckCircle size={32} weight="fill" color="#0a0a0a" />
-              : <Circle size={32} color="#d4d4d4" />}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#0a0a0a' }}>Public</span>
+              <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#525252' }}>
+                Discoverable by everyone on Explore
+              </span>
+            </div>
+            <div style={{ flexShrink: 0 }}>
+              {visibility === 'public'
+                ? <CheckCircle size={32} weight="fill" color="#0a0a0a" />
+                : <Circle size={32} color="#d4d4d4" />}
+            </div>
           </button>
           {/* Private Link */}
           <button
             onClick={() => onSelect('unlisted')}
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              display: 'flex', alignItems: 'center', gap: 12,
               padding: '24px 20px 24px 16px', borderRadius: 24,
               border: visibility === 'unlisted' ? 'none' : '1px solid rgba(0,0,0,0.08)',
               background: visibility === 'unlisted' ? '#f5f5f5' : '#fff',
               cursor: 'pointer', width: '100%', fontFamily: 'inherit', textAlign: 'left',
             }}
           >
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div style={{ padding: 7, flexShrink: 0 }}>
-                <LinkSimple size={40} color={visibility === 'unlisted' ? '#0a0a0a' : '#737373'} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: visibility === 'unlisted' ? '#0a0a0a' : '#737373' }}>Private Link</span>
-                <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#737373' }}>
-                  Only people with your link can open it
-                </span>
-              </div>
+            <div style={{ padding: 7, flexShrink: 0 }}>
+              <LinkSimple size={40} color={visibility === 'unlisted' ? '#0a0a0a' : '#737373'} />
             </div>
-            {visibility === 'unlisted'
-              ? <CheckCircle size={32} weight="fill" color="#0a0a0a" />
-              : <Circle size={32} color="#d4d4d4" />}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: visibility === 'unlisted' ? '#0a0a0a' : '#737373' }}>Private Link</span>
+              <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#737373' }}>
+                Only people with your link can open it
+              </span>
+            </div>
+            <div style={{ flexShrink: 0 }}>
+              {visibility === 'unlisted'
+                ? <CheckCircle size={32} weight="fill" color="#0a0a0a" />
+                : <Circle size={32} color="#d4d4d4" />}
+            </div>
           </button>
         </div>
       </div>
@@ -309,13 +302,17 @@ function ShareScreen({ mode, screen }) {
   const [published, setPublished] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [unpublishing, setUnpublishing] = useState(false)
+  const [updatesPublished, setUpdatesPublished] = useState(false)
+  const [exploreEnabled, setExploreEnabled] = useState(false)
   const clarity = mode === 'clarity'
   const isUpdates = screen === 'updates'
+  const hasUnpublishedUpdates = isUpdates && !updatesPublished
 
   useEffect(() => {
     setPublished(screen === 'updates')
     setPublishing(false)
     setUnpublishing(false)
+    setUpdatesPublished(false)
   }, [screen])
 
   const isShare = activeTab === 'share'
@@ -327,6 +324,7 @@ function ShareScreen({ mode, screen }) {
     setTimeout(() => {
       setPublishing(false)
       setPublished(true)
+      if (isUpdates) setUpdatesPublished(true)
     }, 2000)
   }
 
@@ -433,20 +431,42 @@ function ShareScreen({ mode, screen }) {
                       ? <LinkSimple size={18} color="#0a0a0a" />
                       : <LockSimple size={18} color="#0a0a0a" />}
                 </div>
-                {/* Invite user badges */}
+                {/* Invite user facepile */}
                 <div style={{
-                  position: 'absolute', bottom: -6, left: '50%',
+                  position: 'absolute', bottom: -8, left: '50%',
                   transform: 'translateX(-50%)', display: 'flex',
+                  alignItems: 'center',
+                  borderRadius: 177,
+                  boxShadow: '0 4.5px 14px rgba(0,0,0,0.12)',
+                  paddingRight: 12,
                   opacity: forPage === 'invite' ? 1 : 0,
                   transition: `opacity ${ease} ${forPage === 'invite' ? '0.1s' : '0s'}`,
                   pointerEvents: 'none',
                 }}>
-                  {[0, 1, 2].map((j) => (
-                    <img key={j} src="/mainorb.png" alt="" style={{
-                      width: 24, height: 24, borderRadius: '50%',
-                      objectFit: 'cover', border: '2px solid #fff',
-                      marginLeft: j > 0 ? -6 : 0,
-                    }} />
+                  {[
+                    { type: 'img', src: '/mainorb.png', hue: 30 },
+                    { type: 'placeholder' },
+                    { type: 'placeholder' },
+                  ].map((item, j) => (
+                    item.type === 'img' ? (
+                      <img key={j} src={item.src} alt="" style={{
+                        width: 32, height: 32, borderRadius: '50%',
+                        objectFit: 'cover',
+                        marginLeft: j > 0 ? -12 : 0,
+                        position: 'relative',
+                        zIndex: 3 - j,
+                        filter: `hue-rotate(${item.hue}deg) saturate(0.5)`,
+                      }} />
+                    ) : (
+                      <div key={j} style={{
+                        width: 32, height: 32, borderRadius: '50%',
+                        background: '#e0e0e0',
+                        border: '2px solid #fff',
+                        marginLeft: j > 0 ? -12 : 0,
+                        position: 'relative',
+                        zIndex: 3 - j,
+                      }} />
+                    )
                   ))}
                 </div>
               </div>
@@ -497,6 +517,7 @@ function ShareScreen({ mode, screen }) {
             <div style={{
               width: '50%', height: '100%',
               display: 'flex', flexDirection: 'column',
+              overflow: 'hidden',
             }}>
               {/* Share centered zone — orb + copy centered as a group */}
               <div style={{
@@ -505,7 +526,27 @@ function ShareScreen({ mode, screen }) {
                 textAlign: 'center', gap: 40,
                 position: 'relative', minHeight: 0,
               }}>
-                {renderOrbRow({ forPage: 'share' })}
+                <div style={{
+                  position: 'relative', width: '100%', overflow: 'hidden', flexShrink: 0,
+                }}>
+                  {renderOrbRow({ forPage: 'share' })}
+                  {/* Left gradient fade */}
+                  <div style={{
+                    position: 'absolute', top: 0, bottom: 0, left: 0, width: 40,
+                    background: 'linear-gradient(to right, #fff, rgba(255,255,255,0))',
+                    pointerEvents: 'none', zIndex: 1,
+                    opacity: published && visibility === 'public' ? 1 : 0,
+                    transition: `opacity ${ease}`,
+                  }} />
+                  {/* Right gradient fade */}
+                  <div style={{
+                    position: 'absolute', top: 0, bottom: 0, right: 0, width: 40,
+                    background: 'linear-gradient(to left, #fff, rgba(255,255,255,0))',
+                    pointerEvents: 'none', zIndex: 1,
+                    opacity: published && visibility === 'public' ? 1 : 0,
+                    transition: `opacity ${ease}`,
+                  }} />
+                </div>
                 {/* Copy wrapper */}
                 <div style={{ position: 'relative', width: '100%', padding: '0 30px' }}>
                   {/* Unpublished copy — fades out first, fades in after delay */}
@@ -518,7 +559,7 @@ function ShareScreen({ mode, screen }) {
                       Your mini-app is private. Publish it to share
                     </h1>
                     <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                      None of your data is shared upon publish
+                      Only your app is shared, never your personal data
                     </p>
                   </div>
                   {/* Published copy — fades out first, fades in after delay */}
@@ -531,10 +572,10 @@ function ShareScreen({ mode, screen }) {
                     pointerEvents: published ? 'auto' : 'none',
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                      {isUpdates ? 'Your app has unpublished updates. Publish updates to share' : 'Your mini-app is published!'}
+                      {hasUnpublishedUpdates ? 'Your app has unpublished updates. Republish to share' : 'Your mini-app is published!'}
                     </h1>
                     <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                      {isUpdates ? 'None of your data is shared upon publish' : 'If you want to use it with your friends only, use the Invite tab.'}
+                      {hasUnpublishedUpdates ? 'Republish to make your changes available to everyone' : 'Your app is live and ready to share'}
                     </p>
                   </div>
                 </div>
@@ -645,7 +686,7 @@ function ShareScreen({ mode, screen }) {
 
                   {/* Action button */}
                   <button
-                    onClick={() => { !publishing && !unpublishing && (published && !isUpdates ? handleShare() : handlePublish()) }}
+                    onClick={() => { !publishing && !unpublishing && (published && !hasUnpublishedUpdates ? handleShare() : handlePublish()) }}
                     style={{
                       width: '100%', background: '#171717', color: '#fafafa',
                       border: 'none', borderRadius: 999, padding: '18px 30px',
@@ -657,7 +698,7 @@ function ShareScreen({ mode, screen }) {
                   >
                     {publishing
                       ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
-                      : isUpdates
+                      : hasUnpublishedUpdates
                         ? <><CloudArrowUp size={22} color="#fafafa" /> Publish updates</>
                         : published
                           ? <><Export size={22} color="#fafafa" /> Share mini-app</>
@@ -709,8 +750,59 @@ function ShareScreen({ mode, screen }) {
                   Use this app together
                 </h1>
                 <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                  This is a short two line explainer that's specific to the app type
+                  Invite friends to use this app with you
                 </p>
+              </div>
+
+              {/* Users & Explore card */}
+              <div style={{ padding: '12px 20px 0', flexShrink: 0 }}>
+                <div style={{
+                  background: '#f5f5f5', borderRadius: 24, overflow: 'hidden',
+                }}>
+                  {/* 3 users row */}
+                  <button style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '18px 20px', width: '100%',
+                    background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                  }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
+                      <span style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: '#0a0a0a' }}>3 users</span>
+                      <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '17px', color: '#a3a3a3' }}>You and 2 more</span>
+                    </div>
+                    <CaretRight size={18} weight="bold" color="#0a0a0a" style={{ opacity: 0.5 }} />
+                  </button>
+                  {/* Divider */}
+                  <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 20px' }} />
+                  {/* Add to explore row */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '18px 20px',
+                  }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: '#0a0a0a' }}>Add to explore</span>
+                      <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '17px', color: '#a3a3a3' }}>so anyone on wabi can join</span>
+                    </div>
+                    {/* Toggle */}
+                    <div
+                      onClick={() => setExploreEnabled(!exploreEnabled)}
+                      style={{
+                        width: 44, height: 26, borderRadius: 13, flexShrink: 0,
+                        background: exploreEnabled ? '#0a0a0a' : 'rgba(0,0,0,0.15)',
+                        position: 'relative', cursor: 'pointer',
+                        transition: 'background 0.2s ease',
+                      }}
+                    >
+                      <div style={{
+                        width: 22, height: 22, borderRadius: 11,
+                        background: '#fff',
+                        position: 'absolute', top: 2,
+                        left: exploreEnabled ? 20 : 2,
+                        transition: 'left 0.2s ease',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                      }} />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Search */}
@@ -766,7 +858,7 @@ function ShareScreen({ mode, screen }) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
                   boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
                 }}>
-                  <Plus size={20} color="#fafafa" /> Invite via link
+                  <Broadcast size={20} color="#fafafa" /> Invite via link
                 </button>
               </div>
             </div>
@@ -786,11 +878,109 @@ function ShareScreen({ mode, screen }) {
   )
 }
 
+/* ─── Mobile Controls Dropdown ─── */
+
+function MobileControls({ mode, onModeChange, screen, onScreenChange }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 50 }}>
+      {/* Trigger button */}
+      <div style={{
+        display: 'flex', justifyContent: 'center', padding: '10px 0 0',
+      }}>
+        <button
+          onClick={() => setOpen(!open)}
+          style={{
+            background: 'rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 20,
+            padding: '8px 16px',
+            fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.5)',
+            cursor: 'pointer', fontFamily: 'inherit',
+            display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'all 0.2s ease',
+          }}
+        >
+          Controls
+          <CaretRight
+            size={12} weight="bold" color="rgba(255,255,255,0.4)"
+            style={{
+              transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s ease',
+            }}
+          />
+        </button>
+      </div>
+      {/* Dropdown panel */}
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: open ? 300 : 0,
+        opacity: open ? 1 : 0,
+        transition: 'all 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        padding: '0 16px',
+      }}>
+        <div style={{
+          marginTop: 8,
+          background: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+          borderRadius: 20,
+          border: '1px solid rgba(255,255,255,0.08)',
+          padding: '16px 16px',
+          display: 'flex', flexDirection: 'column', gap: 16,
+        }}>
+          <SegmentedControl
+            label="Layout"
+            options={[
+              { label: 'v1: Clarity', value: 'clarity' },
+              { label: 'v2: Minimal', value: 'minimal' },
+            ]}
+            value={mode}
+            onChange={onModeChange}
+          />
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+          <SegmentedControl
+            label="State of app"
+            options={[
+              { label: 'First publish', value: 'first-publish' },
+              { label: 'App has updates', value: 'updates' },
+            ]}
+            value={screen}
+            onChange={onScreenChange}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ─── App ─── */
 
 export default function App() {
   const [mode, setMode] = useState('clarity')
   const [screen, setScreen] = useState('first-publish')
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 500)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  if (isMobile) {
+    return (
+      <div style={{
+        width: '100vw', height: '100dvh', position: 'relative',
+        fontFamily: '"Selecta", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
+        color: '#fff', overflow: 'hidden',
+      }}>
+        <ShareScreen mode={mode} screen={screen} />
+        <MobileControls mode={mode} onModeChange={setMode} screen={screen} onScreenChange={setScreen} />
+      </div>
+    )
+  }
 
   return (
     <div style={{
