@@ -519,39 +519,25 @@ function ShareScreen({ mode }) {
         {/* Share bottom controls */}
         <div style={{
           flexShrink: 0,
-          maxHeight: isShare ? 400 : 0,
+          maxHeight: isShare ? 500 : 0,
           opacity: isShare ? 1 : 0,
           overflow: 'hidden',
           transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           pointerEvents: isShare ? 'auto' : 'none',
         }}>
-          {clarity ? (
-            /* ─── Clarity: options + button inside gray area ─── */
-            <div style={{
-              margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
-              padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
-            }}>
-              {published ? (
-                <button
-                  onClick={() => setSheetOpen(true)}
-                  style={{
-                    background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
-                  }}
-                >
-                  <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {visibility === 'public'
-                      ? <GlobeSimple size={32} color="#0a0a0a" />
-                      : <LinkSimple size={32} color="#0a0a0a" />}
-                  </div>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-                    <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
-                    <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
-                  </div>
-                  <CaretRight size={24} weight="bold" color="#0a0a0a" />
-                </button>
-              ) : (
+          <div style={{
+            margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
+            padding: 20, display: 'flex', flexDirection: 'column', gap: 0,
+          }}>
+            {/* Unpublished: expanded visibility options (clarity only) */}
+            {clarity && (
+              <div style={{
+                maxHeight: !published ? 200 : 0,
+                opacity: !published ? 1 : 0,
+                overflow: 'hidden',
+                transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+                marginBottom: !published ? 16 : 0,
+              }}>
                 <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
                   <button
                     onClick={() => setVisibility('public')}
@@ -593,27 +579,16 @@ function ShareScreen({ mode }) {
                       : <Circle size={28} color="#d4d4d4" />}
                   </button>
                 </div>
-              )}
-              <button
-                onClick={() => { published ? handleShare() : handlePublish() }}
-                style={{
-                  width: '100%', background: '#171717', color: '#fafafa',
-                  border: 'none', borderRadius: 999, padding: '18px 30px',
-                  fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-                  boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-                }}
-              >
-                {published
-                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
-              </button>
-            </div>
-          ) : (
-            /* ─── Minimal ─── */
+              </div>
+            )}
+
+            {/* Published / Minimal: collapsed visibility row */}
             <div style={{
-              margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
-              padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
+              maxHeight: (published || !clarity) ? 100 : 0,
+              opacity: (published || !clarity) ? 1 : 0,
+              overflow: 'hidden',
+              transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              marginBottom: (published || !clarity) ? 16 : 0,
             }}>
               <button
                 onClick={() => setSheetOpen(true)}
@@ -634,25 +609,32 @@ function ShareScreen({ mode }) {
                 </div>
                 <CaretRight size={24} weight="bold" color="#0a0a0a" />
               </button>
-              <button
-                onClick={() => { published ? handleShare() : handlePublish() }}
-                style={{
-                  width: '100%', background: '#171717', color: '#fafafa',
-                  border: 'none', borderRadius: 999, padding: '18px 30px',
-                  fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-                  boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-                }}
-              >
-                {published
-                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
-              </button>
             </div>
-          )}
+
+            {/* Action button */}
+            <button
+              onClick={() => { published ? handleShare() : handlePublish() }}
+              style={{
+                width: '100%', background: '#171717', color: '#fafafa',
+                border: 'none', borderRadius: 999, padding: '18px 30px',
+                fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+              }}
+            >
+              {published
+                ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+            </button>
+          </div>
 
           {/* Unpublish link */}
-          {published && (
+          <div style={{
+            maxHeight: published ? 60 : 0,
+            opacity: published ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          }}>
             <button
               onClick={handleUnpublish}
               style={{
@@ -661,15 +643,18 @@ function ShareScreen({ mode }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 gap: 8, padding: '16px 0 28px', fontFamily: 'inherit',
                 fontSize: 15, fontWeight: 500, color: '#ef4444',
-                flexShrink: 0,
               }}
             >
               <LockSimple size={20} color="#ef4444" />
               Unpublish your app
             </button>
-          )}
+          </div>
 
-          {!published && <div style={{ height: 28, flexShrink: 0 }} />}
+          <div style={{
+            height: 28,
+            maxHeight: !published ? 28 : 0,
+            transition: 'max-height 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          }} />
         </div>
       </div>
 
