@@ -383,7 +383,7 @@ function ShareScreen({ mode, screen }) {
     touchDirRef.current = null
   }
 
-  const ease = '0.5s cubic-bezier(0.32, 0.72, 0, 1)'
+  const ease = '0.8s cubic-bezier(0.32, 0.72, 0, 1)'
 
   const renderOrbRow = ({ forPage }) => {
     const showSide = forPage === 'share' && published && visibility === 'public'
@@ -459,7 +459,7 @@ function ShareScreen({ mode, screen }) {
               borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
               opacity: showSide ? 1 : 0,
               transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
-              transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+              transition: `all 0.8s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
             }} />
           )
         })}
@@ -508,11 +508,11 @@ function ShareScreen({ mode, screen }) {
                 {renderOrbRow({ forPage: 'share' })}
                 {/* Copy wrapper */}
                 <div style={{ position: 'relative', width: '100%', padding: '0 30px' }}>
-                  {/* Unpublished copy */}
+                  {/* Unpublished copy — fades out first, fades in after delay */}
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
                     opacity: !published ? 1 : 0,
-                    transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
+                    transition: `opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1) ${!published ? '0.35s' : '0s'}`,
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
                       Your mini-app is private. Publish it to share
@@ -521,13 +521,13 @@ function ShareScreen({ mode, screen }) {
                       None of your data is shared upon publish
                     </p>
                   </div>
-                  {/* Published copy — overlaps */}
+                  {/* Published copy — fades out first, fades in after delay */}
                   <div style={{
                     position: 'absolute', inset: 0,
                     display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
                     justifyContent: 'center', padding: '0 30px',
                     opacity: published ? 1 : 0,
-                    transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
+                    transition: `opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1) ${published ? '0.35s' : '0s'}`,
                     pointerEvents: published ? 'auto' : 'none',
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
