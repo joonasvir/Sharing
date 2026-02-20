@@ -10,15 +10,25 @@ import {
   LockSimple,
   CheckCircle,
   Circle,
+  MagnifyingGlass,
+  Plus,
 } from '@phosphor-icons/react'
 
 /* ─── App Card Carousel (publish animation) ─── */
 
 const CAROUSEL_APPS = [
-  { name: 'Collection', hue: 180 },
-  { name: 'Bucket list', hue: 35 },
-  { name: 'Daily Mindfulness', hue: 0, isMain: true },
-  { name: 'Run Club', hue: 280 },
+  { hue: 60 },
+  { hue: 180 },
+  { hue: 0, isMain: true },
+  { hue: 35 },
+  { hue: 280 },
+]
+
+const MOCK_USERS = [
+  { name: 'TomTaylr', handle: 'BookWorm2023', hue: 30 },
+  { name: 'SarahJ', handle: 'SarahJ_Design', hue: 120 },
+  { name: 'MikeR', handle: 'MikeRunsALot', hue: 220 },
+  { name: 'AlexPatel', handle: 'AlexP_2024', hue: 320 },
 ]
 
 function AppCarousel({ published }) {
@@ -29,11 +39,11 @@ function AppCarousel({ published }) {
       width: '100%',
       display: 'flex',
       justifyContent: 'center',
-      padding: '8px 16px',
+      padding: '8px 0',
     }}>
       <div style={{
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'center',
         gap: published ? 10 : 0,
         transition: `gap 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${published ? '0.15s' : '0s'}`,
@@ -42,35 +52,34 @@ function AppCarousel({ published }) {
           const isMain = app.isMain
           const delay = published ? 0.12 + Math.abs(i - mainIndex) * 0.07 : 0
 
-          let width, padding, bg, shadow, iconSize, labelOpacity, scale, opacity
+          let width, padding, bg, shadow, iconSize, scale, opacity
 
           if (!published) {
             if (isMain) {
               width = 120; padding = '0'; bg = 'transparent'; shadow = 'none'
-              iconSize = 120; labelOpacity = 0; scale = 1; opacity = 1
+              iconSize = 120; scale = 1; opacity = 1
             } else {
               width = 0; padding = '0'; bg = 'transparent'; shadow = 'none'
-              iconSize = 0; labelOpacity = 0; scale = 0.5; opacity = 0
+              iconSize = 0; scale = 0.5; opacity = 0
             }
           } else {
-            width = 80; padding = '12px 8px'; bg = '#fff'
-            shadow = '0 2px 8px rgba(0,0,0,0.06)'; iconSize = 56
-            labelOpacity = 1; scale = 1; opacity = 1
+            width = 60; padding = '10px 0'; bg = '#fff'
+            shadow = '0 2px 8px rgba(0,0,0,0.06)'; iconSize = 42
+            scale = 1; opacity = 1
           }
 
           return (
             <div
-              key={app.name}
+              key={i}
               style={{
                 width,
                 flexShrink: 0,
                 padding,
                 background: bg,
-                borderRadius: 18,
+                borderRadius: 16,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: published ? 6 : 0,
                 boxShadow: shadow,
                 transform: `scale(${scale})`,
                 opacity,
@@ -91,19 +100,6 @@ function AppCarousel({ published }) {
                   transition: `all 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                 }}
               />
-              <span style={{
-                fontSize: 11,
-                fontWeight: 500,
-                color: '#0a0a0a',
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-                opacity: labelOpacity,
-                maxHeight: published ? 20 : 0,
-                transition: `all 0.5s ease ${published ? delay + 0.15 : 0}s`,
-                overflow: 'hidden',
-              }}>
-                {app.name}
-              </span>
             </div>
           )
         })}
@@ -371,8 +367,11 @@ function ShareScreen({ mode }) {
   const [settled, setSettled] = useState(false)
   const clarity = mode === 'clarity'
 
+  const isShare = activeTab === 'share'
+  const isInvite = activeTab === 'invite'
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
   const contentVisible = !published || settled
+  const orbSize = isInvite ? 90 : (published && settled ? 0 : 120)
 
   const handlePublish = () => {
     setPublished(true)
@@ -406,22 +405,84 @@ function ShareScreen({ mode }) {
       }}>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Center content */}
+        {/* Hero area — flex-grows on share tab (centers content), compact on invite */}
         <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', textAlign: 'center', gap: clarity ? 16 : 25,
+          flexGrow: isShare ? 1 : 0,
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingTop: isInvite ? 20 : 0,
+          gap: 12,
+          textAlign: 'center',
+          transition: 'flex-grow 0.45s cubic-bezier(0.32, 0.72, 0, 1), padding 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
-          <AppCarousel published={published} />
+          {/* Shared orb — single element, transitions size between tabs */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <img
+              src="/orb.png"
+              alt=""
+              style={{
+                width: orbSize,
+                height: orbSize,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                transition: 'all 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
+              }}
+            />
+            {/* Invite user badges */}
+            <div style={{
+              position: 'absolute',
+              bottom: -6,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              opacity: isInvite ? 1 : 0,
+              transition: `opacity 0.3s ease ${isInvite ? '0.15s' : '0s'}`,
+              pointerEvents: 'none',
+            }}>
+              {[200, 100, 320].map((hue, i) => (
+                <img
+                  key={i}
+                  src="/orb.png"
+                  alt=""
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid #fff',
+                    marginLeft: i > 0 ? -6 : 0,
+                    filter: `hue-rotate(${hue}deg) brightness(0.8)`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Published carousel (share tab only) */}
+          <div style={{
+            width: '100%',
+            maxHeight: isShare && published && settled ? 150 : 0,
+            opacity: isShare && published && settled ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'all 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
+          }}>
+            <AppCarousel published={published} />
+          </div>
+
+          {/* Share copy */}
           <div style={{
             display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-            padding: clarity ? '0 30px' : '0 40px',
-            opacity: contentVisible ? 1 : 0,
-            transition: 'opacity 0.35s ease',
+            padding: '0 30px',
+            maxHeight: isShare ? 200 : 0,
+            opacity: isShare && contentVisible ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'all 0.35s ease',
           }}>
             <h1 style={{ fontSize: 24, fontWeight: settled ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
-              {settled
-                ? 'Your mini-app is published!'
-                : 'Publish your app to share it'}
+              {settled ? 'Your mini-app is published!' : 'Publish your app to share it'}
             </h1>
             <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
               {settled
@@ -429,14 +490,110 @@ function ShareScreen({ mode }) {
                 : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
             </p>
           </div>
+
+          {/* Invite copy */}
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+            padding: '0 30px',
+            maxHeight: isInvite ? 200 : 0,
+            opacity: isInvite ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'all 0.35s ease',
+          }}>
+            <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+              Use this app together
+            </h1>
+            <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+              This is a short two line explainer that's specific to the app type
+            </p>
+          </div>
         </div>
 
-        {/* Bottom section — fades during publish transition */}
+        {/* Invite middle: search + user list */}
+        <div style={{
+          flexGrow: isInvite ? 1 : 0,
+          flexShrink: isInvite ? 1 : 0,
+          opacity: isInvite ? 1 : 0,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'flex-grow 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease',
+          pointerEvents: isInvite ? 'auto' : 'none',
+        }}>
+          {/* Search */}
+          <div style={{ padding: '8px 20px 4px', flexShrink: 0 }}>
+            <div style={{
+              background: 'rgba(23,23,23,0.03)', borderRadius: 999, padding: '14px 16px',
+              display: 'flex', alignItems: 'center', gap: 10,
+              boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.15)',
+            }}>
+              <MagnifyingGlass size={20} color="#a3a3a3" />
+              <span style={{ color: '#a3a3a3', fontSize: 18, fontFamily: 'inherit' }}>Search by username</span>
+            </div>
+          </div>
+
+          {/* User list */}
+          <div style={{ flex: 1, overflow: 'auto', padding: '8px 20px' }}>
+            {MOCK_USERS.map((user, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', padding: '10px 0', gap: 12,
+              }}>
+                <img
+                  src="/orb.png"
+                  alt=""
+                  style={{
+                    width: 42, height: 42, borderRadius: '50%',
+                    objectFit: 'cover', flexShrink: 0,
+                    filter: `hue-rotate(${user.hue}deg)`,
+                  }}
+                />
+                <div style={{ flex: 1, textAlign: 'left' }}>
+                  <div style={{ fontSize: 18, fontWeight: 400, color: '#0a0a0a', lineHeight: '22px', opacity: 0.7 }}>{user.name}</div>
+                  <div style={{ fontSize: 16, fontWeight: 400, color: '#737373', lineHeight: '18px', opacity: 0.7 }}>{user.handle}</div>
+                </div>
+                <button style={{
+                  background: '#f5f5f5', border: 'none', borderRadius: 999,
+                  padding: '8px 16px', fontSize: 12, fontWeight: 500, color: '#0a0a0a',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.16)',
+                }}>
+                  <Plus size={16} weight="regular" /> Invite
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Invite bottom button */}
         <div style={{
           flexShrink: 0,
-          opacity: contentVisible ? 1 : 0,
-          transition: 'opacity 0.35s ease',
-          pointerEvents: contentVisible ? 'auto' : 'none',
+          maxHeight: isInvite ? 100 : 0,
+          opacity: isInvite ? 1 : 0,
+          overflow: 'hidden',
+          transition: 'all 0.35s ease',
+          pointerEvents: isInvite ? 'auto' : 'none',
+          padding: isInvite ? '0 20px 28px' : '0 20px 0',
+        }}>
+          <button style={{
+            width: '100%', background: '#171717', color: '#fafafa',
+            border: 'none', borderRadius: 999, padding: '18px 30px',
+            fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+            boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+          }}>
+            <Plus size={20} color="#fafafa" /> Invite via link
+          </button>
+        </div>
+
+        {/* Share bottom controls */}
+        <div style={{
+          flexShrink: 0,
+          maxHeight: isShare ? 400 : 0,
+          opacity: isShare && contentVisible ? 1 : 0,
+          overflow: 'hidden',
+          transition: 'all 0.35s ease',
+          pointerEvents: isShare && contentVisible ? 'auto' : 'none',
         }}>
           {clarity ? (
             /* ─── Clarity: options + button inside gray area ─── */
@@ -445,7 +602,6 @@ function ShareScreen({ mode }) {
               padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
             }}>
               {published ? (
-                /* Collapsed: single visibility row that opens sheet */
                 <button
                   onClick={() => setSheetOpen(true)}
                   style={{
@@ -466,7 +622,6 @@ function ShareScreen({ mode }) {
                   <CaretRight size={24} weight="bold" color="#0a0a0a" />
                 </button>
               ) : (
-                /* Expanded: both options in a white card */
                 <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
                   <button
                     onClick={() => setVisibility('public')}
@@ -487,9 +642,7 @@ function ShareScreen({ mode }) {
                       ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
                       : <Circle size={28} color="#d4d4d4" />}
                   </button>
-
                   <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
-
                   <button
                     onClick={() => setVisibility('unlisted')}
                     style={{
@@ -500,14 +653,8 @@ function ShareScreen({ mode }) {
                   >
                     <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0'} />
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <span style={{
-                        fontSize: 15, fontWeight: 500, lineHeight: '18px',
-                        color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0',
-                      }}>Unlisted</span>
-                      <span style={{
-                        fontSize: 13, fontWeight: 400, lineHeight: '16px',
-                        color: visibility === 'unlisted' ? '#525252' : '#c5c5c5',
-                      }}>
+                      <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0' }}>Unlisted</span>
+                      <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#c5c5c5' }}>
                         Not visible on Explore or search, but anyone with the link can view
                       </span>
                     </div>
@@ -517,7 +664,6 @@ function ShareScreen({ mode }) {
                   </button>
                 </div>
               )}
-
               <button
                 onClick={() => { published ? handleShare() : handlePublish() }}
                 style={{
@@ -534,9 +680,9 @@ function ShareScreen({ mode }) {
               </button>
             </div>
           ) : (
-            /* ─── Minimal: collapsed visibility row ─── */
+            /* ─── Minimal ─── */
             <div style={{
-              flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
+              margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
               padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
             }}>
               <button
@@ -558,7 +704,6 @@ function ShareScreen({ mode }) {
                 </div>
                 <CaretRight size={24} weight="bold" color="#0a0a0a" />
               </button>
-
               <button
                 onClick={() => { published ? handleShare() : handlePublish() }}
                 style={{
@@ -581,6 +726,7 @@ function ShareScreen({ mode }) {
             <button
               onClick={handleUnpublish}
               style={{
+                width: '100%',
                 background: 'none', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 gap: 8, padding: '16px 0 28px', fontFamily: 'inherit',
