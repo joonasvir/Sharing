@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   GlobeSimple,
   LinkSimple,
@@ -320,7 +320,7 @@ function ShareScreen({ mode }) {
     setTimeout(() => {
       setPublishing(false)
       setPublished(true)
-    }, 1400)
+    }, 2000)
   }
 
   const handleUnpublish = () => {
@@ -328,7 +328,7 @@ function ShareScreen({ mode }) {
     setTimeout(() => {
       setUnpublishing(false)
       setPublished(false)
-    }, 1200)
+    }, 1800)
   }
 
   const handleShare = async () => {
@@ -345,12 +345,50 @@ function ShareScreen({ mode }) {
     }
   }
 
+  /* ── Swipe gesture ── */
+  const touchStartRef = useRef(null)
+  const touchDirRef = useRef(null)
+
+  const handleTouchStart = (e) => {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    touchDirRef.current = null
+  }
+
+  const handleTouchMove = (e) => {
+    if (!touchStartRef.current) return
+    const dx = e.touches[0].clientX - touchStartRef.current.x
+    const dy = e.touches[0].clientY - touchStartRef.current.y
+    if (touchDirRef.current === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+      touchDirRef.current = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical'
+    }
+  }
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartRef.current || touchDirRef.current !== 'horizontal') {
+      touchStartRef.current = null
+      touchDirRef.current = null
+      return
+    }
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x
+    if (dx < -50 && isShare) setActiveTab('invite')
+    else if (dx > 50 && isInvite) setActiveTab('share')
+    touchStartRef.current = null
+    touchDirRef.current = null
+  }
+
+  const ease = '0.5s cubic-bezier(0.32, 0.72, 0, 1)'
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000' }}>
-      <div style={{
-        position: 'absolute', inset: 0, top: 51, background: '#fff',
-        borderRadius: '38px 38px 46px 46px', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      }}>
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          position: 'absolute', inset: 0, top: 51, background: '#fff',
+          borderRadius: '38px 38px 46px 46px', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}
+      >
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Hero area — always flex-grows, invite sections push it smaller */}
@@ -382,7 +420,7 @@ function ShareScreen({ mode }) {
               const showSide = isShare && published && visibility === 'public'
               const delay = showSide ? 0.1 + dist * 0.06 : 0
               const size = isMain
-                ? (isInvite ? 90 : (publishing ? 110 : (published && visibility === 'public' ? 65 : 120)))
+                ? (isInvite ? 90 : (published && visibility === 'public' ? 65 : 120))
                 : (showSide ? 65 : 0)
 
               if (isMain) {
@@ -398,7 +436,7 @@ function ShareScreen({ mode }) {
                         width: size, height: size,
                         borderRadius: '50%', objectFit: 'cover',
                         display: 'block',
-                        opacity: publishing || unpublishing ? 0.7 : 1,
+                        opacity: 1,
                         transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                       }}
                     />
@@ -412,7 +450,7 @@ function ShareScreen({ mode }) {
                       backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: isInvite || publishing || unpublishing ? 0 : 1,
+                      opacity: isInvite ? 0 : 1,
                       transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                     }}>
                       {published && visibility === 'public'
@@ -468,8 +506,9 @@ function ShareScreen({ mode }) {
             {/* Share unpublished copy — takes layout space */}
             <div style={{
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              opacity: isShare && !published && !publishing ? 1 : 0,
-              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              opacity: isShare && !published ? 1 : 0,
+              transform: `translateX(${isInvite ? '-40px' : '0'})`,
+              transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1), transform ${ease}`,
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
                 Your mini-app is private. Publish it to share
@@ -478,29 +517,14 @@ function ShareScreen({ mode }) {
                 None of your data is shared upon publish
               </p>
             </div>
-            {/* Publishing copy — overlaps */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              justifyContent: 'center', padding: '0 30px',
-              opacity: isShare && publishing ? 1 : 0,
-              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-              pointerEvents: 'none',
-            }}>
-              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                Publishing...
-              </h1>
-              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                Your mini-app is being shared with the world
-              </p>
-            </div>
             {/* Share published copy — overlaps */}
             <div style={{
               position: 'absolute', inset: 0,
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               justifyContent: 'center', padding: '0 30px',
-              opacity: isShare && published && !publishing && !unpublishing ? 1 : 0,
-              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              opacity: isShare && published ? 1 : 0,
+              transform: `translateX(${isInvite ? '-40px' : '0'})`,
+              transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1), transform ${ease}`,
               pointerEvents: 'none',
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
@@ -510,29 +534,14 @@ function ShareScreen({ mode }) {
                 If you want to use it with your friends only, use the Invite tab.
               </p>
             </div>
-            {/* Unpublishing copy — overlaps */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              justifyContent: 'center', padding: '0 30px',
-              opacity: isShare && unpublishing ? 1 : 0,
-              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-              pointerEvents: 'none',
-            }}>
-              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                Unpublishing...
-              </h1>
-              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                Your mini-app is being made private
-              </p>
-            </div>
             {/* Invite copy — overlaps */}
             <div style={{
               position: 'absolute', inset: 0,
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               justifyContent: 'center', padding: '0 30px',
               opacity: isInvite ? 1 : 0,
-              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              transform: `translateX(${isInvite ? '0' : '40px'})`,
+              transition: `opacity ${ease}, transform ${ease}`,
               pointerEvents: 'none',
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
@@ -550,10 +559,11 @@ function ShareScreen({ mode }) {
           flexShrink: 0,
           maxHeight: isInvite ? 500 : 0,
           opacity: isInvite ? 1 : 0,
+          transform: `translateX(${isInvite ? '0' : '60px'})`,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: `all ${ease}`,
           pointerEvents: isInvite ? 'auto' : 'none',
         }}>
           {/* Search */}
@@ -606,8 +616,9 @@ function ShareScreen({ mode }) {
           flexShrink: 0,
           maxHeight: isInvite ? 100 : 0,
           opacity: isInvite ? 1 : 0,
+          transform: `translateX(${isInvite ? '0' : '60px'})`,
           overflow: 'hidden',
-          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: `all ${ease}`,
           pointerEvents: isInvite ? 'auto' : 'none',
           padding: isInvite ? '0 20px 28px' : '0 20px 0',
         }}>
@@ -627,8 +638,9 @@ function ShareScreen({ mode }) {
           flexShrink: 0,
           maxHeight: isShare ? 500 : 0,
           opacity: isShare ? 1 : 0,
+          transform: `translateX(${isShare ? '0' : '-60px'})`,
           overflow: 'hidden',
-          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: `all ${ease}`,
           pointerEvents: isShare ? 'auto' : 'none',
         }}>
           <div style={{
@@ -727,14 +739,13 @@ function ShareScreen({ mode }) {
                 cursor: publishing || unpublishing ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
                 boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-                opacity: publishing || unpublishing ? 0.5 : 1,
-                transition: 'opacity 0.3s ease',
+                transition: 'all 0.3s ease',
               }}
             >
               {publishing
-                ? 'Publishing...'
+                ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
                 : unpublishing
-                  ? 'Unpublishing...'
+                  ? <><LockSimple size={22} color="#fafafa" /> Unpublishing...</>
                   : published
                     ? <><Export size={22} color="#fafafa" /> Share mini-app</>
                     : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
