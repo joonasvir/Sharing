@@ -321,7 +321,6 @@ function ShareScreen({ mode, screen }) {
   const isShare = activeTab === 'share'
   const isInvite = activeTab === 'invite'
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
-  const orbSize = isInvite ? 90 : (published && visibility === 'public' ? 65 : 120)
 
   const handlePublish = () => {
     setPublishing(true)
@@ -386,6 +385,88 @@ function ShareScreen({ mode, screen }) {
 
   const ease = '0.5s cubic-bezier(0.32, 0.72, 0, 1)'
 
+  const renderOrbRow = ({ forPage }) => {
+    const showSide = forPage === 'share' && published && visibility === 'public'
+    return (
+      <div style={{
+        flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        gap: showSide ? 10 : 0,
+        transition: `all ${ease}`,
+      }}>
+        {APP_ORBS.map((orb, i) => {
+          const isMain = orb.isMain
+          const mainIdx = 2
+          const dist = Math.abs(i - mainIdx)
+          const offsetDir = i < mainIdx ? -1 : 1
+          const delay = showSide ? 0.1 + dist * 0.06 : 0
+          const mainSize = forPage === 'invite' ? 90 : (published && visibility === 'public' ? 65 : 120)
+          const size = isMain ? mainSize : (showSide ? 65 : 0)
+
+          if (isMain) {
+            return (
+              <div key={i} style={{
+                position: 'relative', flexShrink: 0,
+                transition: `all ${ease}`,
+              }}>
+                <img src={orb.src} alt="" style={{
+                  width: size, height: size,
+                  borderRadius: '50%', objectFit: 'cover',
+                  display: 'block', transition: `all ${ease}`,
+                }} />
+                {/* Status badge */}
+                <div style={{
+                  position: 'absolute', top: -2, right: -6,
+                  width: forPage === 'share' && published ? 28 : 36,
+                  height: forPage === 'share' && published ? 28 : 36,
+                  borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.85)',
+                  backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  opacity: forPage === 'invite' ? 0 : 1,
+                  transition: `all ${ease}`,
+                }}>
+                  {published && visibility === 'public'
+                    ? <GlobeSimple size={forPage === 'share' && published ? 14 : 18} color="#0a0a0a" />
+                    : published && visibility === 'unlisted'
+                      ? <LinkSimple size={forPage === 'share' && published ? 14 : 18} color="#0a0a0a" />
+                      : <LockSimple size={forPage === 'share' && published ? 14 : 18} color="#0a0a0a" />}
+                </div>
+                {/* Invite user badges */}
+                <div style={{
+                  position: 'absolute', bottom: -6, left: '50%',
+                  transform: 'translateX(-50%)', display: 'flex',
+                  opacity: forPage === 'invite' ? 1 : 0,
+                  transition: `opacity ${ease} ${forPage === 'invite' ? '0.1s' : '0s'}`,
+                  pointerEvents: 'none',
+                }}>
+                  {[0, 1, 2].map((j) => (
+                    <img key={j} src="/mainorb.png" alt="" style={{
+                      width: 24, height: 24, borderRadius: '50%',
+                      objectFit: 'cover', border: '2px solid #fff',
+                      marginLeft: j > 0 ? -6 : 0,
+                    }} />
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          return (
+            <img key={i} src={orb.src} alt="" style={{
+              width: size, height: size,
+              borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+              opacity: showSide ? 1 : 0,
+              transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
+              transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+            }} />
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#000' }}>
       <div
@@ -398,104 +479,6 @@ function ShareScreen({ mode, screen }) {
         }}
       >
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-        {/* Top spacer — small gap on invite, none on share */}
-        <div style={{
-          height: isInvite ? 16 : 0,
-          flexShrink: 0,
-          transition: `height ${ease}`,
-        }} />
-
-        {/* App icon row — shared element, stays in place */}
-        <div style={{
-          flexShrink: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          gap: isShare && published && visibility === 'public' ? 10 : 0,
-          transform: `translateY(${isShare && published && visibility === 'public' ? -10 : 0}px)`,
-          transition: `all ${ease}`,
-        }}>
-          {APP_ORBS.map((orb, i) => {
-            const isMain = orb.isMain
-            const mainIdx = 2
-            const dist = Math.abs(i - mainIdx)
-            const offsetDir = i < mainIdx ? -1 : 1
-            const showSide = isShare && published && visibility === 'public'
-            const delay = showSide ? 0.1 + dist * 0.06 : 0
-            const size = isMain
-              ? (isInvite ? 90 : (published && visibility === 'public' ? 65 : 120))
-              : (showSide ? 65 : 0)
-
-            if (isMain) {
-              return (
-                <div key={i} style={{
-                  position: 'relative', flexShrink: 0,
-                  transition: `all ${ease}`,
-                }}>
-                  <img
-                    src={orb.src}
-                    alt=""
-                    style={{
-                      width: size, height: size,
-                      borderRadius: '50%', objectFit: 'cover',
-                      display: 'block',
-                      transition: `all ${ease}`,
-                    }}
-                  />
-                  {/* Status badge */}
-                  <div style={{
-                    position: 'absolute', top: -2, right: -6,
-                    width: published && isShare ? 28 : 36,
-                    height: published && isShare ? 28 : 36,
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.85)',
-                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    opacity: isInvite ? 0 : 1,
-                    transition: `all ${ease}`,
-                  }}>
-                    {published && visibility === 'public'
-                      ? <GlobeSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
-                      : published && visibility === 'unlisted'
-                        ? <LinkSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
-                        : <LockSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />}
-                  </div>
-                  {/* Invite user badges */}
-                  <div style={{
-                    position: 'absolute', bottom: -6, left: '50%',
-                    transform: 'translateX(-50%)', display: 'flex',
-                    opacity: isInvite ? 1 : 0,
-                    transition: `opacity ${ease} ${isInvite ? '0.1s' : '0s'}`,
-                    pointerEvents: 'none',
-                  }}>
-                    {[0, 1, 2].map((j) => (
-                      <img key={j} src="/mainorb.png" alt="" style={{
-                        width: 24, height: 24, borderRadius: '50%',
-                        objectFit: 'cover', border: '2px solid #fff',
-                        marginLeft: j > 0 ? -6 : 0,
-                      }} />
-                    ))}
-                  </div>
-                </div>
-              )
-            }
-
-            return (
-              <img
-                key={i}
-                src={orb.src}
-                alt=""
-                style={{
-                  width: size, height: size,
-                  borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                  opacity: showSide ? 1 : 0,
-                  transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
-                  transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
-                }}
-              />
-            )
-          })}
-        </div>
 
         {/* Content area — horizontal page slider */}
         <div style={{
@@ -515,41 +498,45 @@ function ShareScreen({ mode, screen }) {
               width: '50%', height: '100%',
               display: 'flex', flexDirection: 'column',
             }}>
-              {/* Share copy — centered in space between orb and controls */}
+              {/* Share centered zone — orb + copy centered as a group */}
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                textAlign: 'center', padding: `0 30px ${orbSize}px`,
-                gap: 12, position: 'relative', minHeight: 0,
+                textAlign: 'center', gap: 20,
+                position: 'relative', minHeight: 0,
               }}>
-                {/* Unpublished copy — takes layout space */}
-                <div style={{
-                  display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-                  opacity: !published ? 1 : 0,
-                  transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
-                }}>
-                  <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                    Your mini-app is private. Publish it to share
-                  </h1>
-                  <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                    None of your data is shared upon publish
-                  </p>
-                </div>
-                {/* Published copy — overlaps */}
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-                  justifyContent: 'center', padding: `0 30px ${orbSize}px`,
-                  opacity: published ? 1 : 0,
-                  transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
-                  pointerEvents: published ? 'auto' : 'none',
-                }}>
-                  <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                    {isUpdates ? 'Your app has unpublished updates. Publish updates to share' : 'Your mini-app is published!'}
-                  </h1>
-                  <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                    {isUpdates ? 'None of your data is shared upon publish' : 'If you want to use it with your friends only, use the Invite tab.'}
-                  </p>
+                {renderOrbRow({ forPage: 'share' })}
+                {/* Copy wrapper */}
+                <div style={{ position: 'relative', width: '100%', padding: '0 30px' }}>
+                  {/* Unpublished copy */}
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+                    opacity: !published ? 1 : 0,
+                    transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
+                  }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                      Your mini-app is private. Publish it to share
+                    </h1>
+                    <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                      None of your data is shared upon publish
+                    </p>
+                  </div>
+                  {/* Published copy — overlaps */}
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+                    justifyContent: 'center', padding: '0 30px',
+                    opacity: published ? 1 : 0,
+                    transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
+                    pointerEvents: published ? 'auto' : 'none',
+                  }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                      {isUpdates ? 'Your app has unpublished updates. Publish updates to share' : 'Your mini-app is published!'}
+                    </h1>
+                    <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                      {isUpdates ? 'None of your data is shared upon publish' : 'If you want to use it with your friends only, use the Invite tab.'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -723,9 +710,13 @@ function ShareScreen({ mode, screen }) {
               width: '50%', height: '100%',
               display: 'flex', flexDirection: 'column',
             }}>
+              {/* Invite orb */}
+              <div style={{ flexShrink: 0, padding: '16px 0 12px', display: 'flex', justifyContent: 'center' }}>
+                {renderOrbRow({ forPage: 'invite' })}
+              </div>
               {/* Invite copy */}
               <div style={{
-                flexShrink: 0, textAlign: 'center', padding: '12px 30px 0',
+                flexShrink: 0, textAlign: 'center', padding: '0 30px',
                 display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               }}>
                 <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
