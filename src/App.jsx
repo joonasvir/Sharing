@@ -153,16 +153,21 @@ function AppCarousel({ published, isInvite, visibility }) {
                 )}
               </div>
 
-              {/* Skeleton text */}
+              {/* Card label */}
               <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMain ? 0 : 5,
                 maxHeight: showCard ? 40 : 0,
                 opacity: showCard ? 1 : 0,
                 overflow: 'hidden',
                 transition: `all 0.4s ease ${delay}s`,
               }}>
-                <div style={{ width: 60, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.08)' }} />
-                <div style={{ width: 40, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.05)' }} />
+                {isMain ? (<>
+                  <span style={{ fontSize: 15, fontWeight: 500, color: '#C47020' }}>Meditation</span>
+                  <span style={{ fontSize: 15, fontWeight: 500, color: '#0a0a0a' }}>moments</span>
+                </>) : (<>
+                  <div style={{ width: 60, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.08)' }} />
+                  <div style={{ width: 40, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.05)' }} />
+                </>)}
               </div>
             </div>
           )
