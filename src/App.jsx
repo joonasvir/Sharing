@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   GlobeSimple,
   LinkSimple,
@@ -12,20 +12,55 @@ import {
   Circle,
 } from '@phosphor-icons/react'
 
-/* ─── Orb Cluster ─── */
+/* ─── Orb Display (animated) ─── */
 
-function OrbCluster() {
-  const orbs = [
-    { size: 120, x: 140, y: 0, hue: 0 },
-    { size: 75, x: 55, y: 30, hue: 210 },
-    { size: 75, x: 235, y: 30, hue: 190 },
-    { size: 70, x: 95, y: 110, hue: 30 },
-    { size: 70, x: 185, y: 110, hue: 160 },
-  ]
+const SATELLITE_ORBS = [
+  { size: 75, x: 55, y: 30, hue: 210, startX: -120, startY: 0 },    // left
+  { size: 75, x: 235, y: 30, hue: 190, startX: 120, startY: 0 },    // right
+  { size: 70, x: 95, y: 110, hue: 30, startX: -80, startY: 80 },    // bottom-left
+  { size: 70, x: 185, y: 110, hue: 160, startX: 80, startY: 80 },   // bottom-right
+]
+
+function OrbDisplay({ published }) {
+  const [animating, setAnimating] = useState(false)
+
+  useEffect(() => {
+    if (published) {
+      // Small delay so initial positions render first
+      const t = requestAnimationFrame(() => setAnimating(true))
+      return () => cancelAnimationFrame(t)
+    } else {
+      setAnimating(false)
+    }
+  }, [published])
+
+  const mainSize = published ? 120 : (published === false ? 120 : 120)
 
   return (
-    <div style={{ position: 'relative', width: 310, height: 190 }}>
-      {orbs.map((orb, i) => (
+    <div style={{
+      position: 'relative',
+      width: 310,
+      height: published ? 190 : 120,
+      transition: 'height 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+      display: 'flex',
+      justifyContent: 'center',
+    }}>
+      {/* Main orb — always present */}
+      <img
+        src="/orb.png"
+        alt=""
+        style={{
+          position: published ? 'absolute' : 'relative',
+          width: mainSize,
+          height: mainSize,
+          borderRadius: '50%',
+          objectFit: 'cover',
+          ...(published && { left: 140, top: 0, transform: 'translateX(-50%)' }),
+          transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      />
+      {/* Satellite orbs */}
+      {SATELLITE_ORBS.map((orb, i) => (
         <img
           key={i}
           src="/orb.png"
@@ -36,10 +71,14 @@ function OrbCluster() {
             height: orb.size,
             borderRadius: '50%',
             objectFit: 'cover',
-            left: orb.x,
-            top: orb.y,
-            filter: orb.hue ? `hue-rotate(${orb.hue}deg)` : 'none',
+            filter: `hue-rotate(${orb.hue}deg)`,
+            left: animating ? orb.x : 140 + orb.startX * 0.2,
+            top: animating ? orb.y : 30 + orb.startY * 0.2,
             transform: 'translateX(-50%)',
+            opacity: published ? (animating ? 1 : 0) : 0,
+            scale: published ? (animating ? '1' : '0.3') : '0.3',
+            transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${i * 0.06}s`,
+            pointerEvents: 'none',
           }}
         />
       ))}
@@ -335,14 +374,7 @@ function ShareScreen({ mode }) {
           justifyContent: 'center', padding: clarity ? '0 30px' : '0 40px',
           textAlign: 'center', gap: clarity ? 16 : 25,
         }}>
-          {published ? (
-            <OrbCluster />
-          ) : (
-            <img src="/orb.png" alt="" style={{
-              width: clarity ? 100 : 120, height: clarity ? 100 : 120,
-              borderRadius: '50%', objectFit: 'cover', transition: 'all 0.3s ease',
-            }} />
-          )}
+          <OrbDisplay published={published} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
             <h1 style={{ fontSize: 24, fontWeight: published ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
               {published
