@@ -691,10 +691,10 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     pointerEvents: published ? 'auto' : 'none',
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                      {hasUnpublishedUpdates ? 'Your app has unpublished updates. Republish to share' : 'Your mini-app is published!'}
+                      {hasUnpublishedUpdates ? 'Your app has unpublished updates' : 'Your mini-app is published!'}
                     </h1>
                     <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                      {hasUnpublishedUpdates ? 'Republish to make your changes available to everyone' : 'Your app is live and ready to share'}
+                      {hasUnpublishedUpdates ? 'Republish your app if you want to share with latest updates included.' : 'Your app is live and ready to share'}
                     </p>
                   </div>
                 </div>
@@ -823,6 +823,28 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                           ? <><Export size={22} color="#fafafa" /> Share mini-app</>
                           : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
                   </button>
+
+                  {/* Share old version button — updates state only */}
+                  <div style={{
+                    maxHeight: hasUnpublishedUpdates ? 60 : 0,
+                    opacity: hasUnpublishedUpdates ? 1 : 0,
+                    overflow: 'hidden',
+                    transition: `all ${ease}`,
+                    marginTop: hasUnpublishedUpdates ? 8 : 0,
+                  }}>
+                    <button
+                      onClick={() => handleShare()}
+                      style={{
+                        width: '100%', background: '#fff', color: '#0a0a0a',
+                        border: 'none', borderRadius: 999, padding: '18px 30px',
+                        fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                        boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.08)', fontFamily: 'inherit',
+                      }}
+                    >
+                      <Export size={22} color="#0a0a0a" /> Share old version
+                    </button>
+                  </div>
                 </div>
 
               </div>
