@@ -367,28 +367,32 @@ function ShareScreen({ mode }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             gap: isShare && published && visibility === 'public' ? 10 : 0,
             transform: `translateY(${isShare && published && visibility === 'public' ? -10 : 0}px)`,
-            transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+            transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           }}>
             {APP_ORBS.map((orb, i) => {
               const isMain = orb.isMain
               const mainIdx = 2
               const dist = Math.abs(i - mainIdx)
               const offsetDir = i < mainIdx ? -1 : 1
-              const delay = isShare && published ? 0.1 + dist * 0.06 : 0
               const showSide = isShare && published && visibility === 'public'
+              const delay = showSide ? 0.1 + dist * 0.06 : 0
               const size = isMain
                 ? (isInvite ? 90 : (publishing ? 110 : (published && visibility === 'public' ? 65 : 120)))
                 : (showSide ? 65 : 0)
 
               if (isMain) {
                 return (
-                  <div key={i} style={{ position: 'relative', flexShrink: 0 }}>
+                  <div key={i} style={{
+                    position: 'relative', flexShrink: 0,
+                    transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+                  }}>
                     <img
                       src="/orb.png"
                       alt=""
                       style={{
                         width: size, height: size,
                         borderRadius: '50%', objectFit: 'cover',
+                        display: 'block',
                         opacity: publishing ? 0.7 : 1,
                         transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                       }}
@@ -396,20 +400,21 @@ function ShareScreen({ mode }) {
                     {/* Status badge */}
                     <div style={{
                       position: 'absolute', top: -2, right: -6,
-                      width: 36, height: 36, borderRadius: '50%',
+                      width: published && isShare ? 28 : 36,
+                      height: published && isShare ? 28 : 36,
+                      borderRadius: '50%',
                       background: 'rgba(255,255,255,0.85)',
                       backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       opacity: isInvite || publishing ? 0 : 1,
-                      transform: `scale(${published && isShare ? 0.8 : 1})`,
                       transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                     }}>
                       {published && visibility === 'public'
-                        ? <GlobeSimple size={18} color="#0a0a0a" />
+                        ? <GlobeSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
                         : published && visibility === 'unlisted'
-                          ? <LinkSimple size={18} color="#0a0a0a" />
-                          : <LockSimple size={18} color="#0a0a0a" />}
+                          ? <LinkSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
+                          : <LockSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />}
                     </div>
                     {/* Invite user badges */}
                     <div style={{
@@ -443,7 +448,7 @@ function ShareScreen({ mode }) {
                     filter: `hue-rotate(${orb.hue}deg)`,
                     opacity: showSide ? 0.85 : 0,
                     transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
-                    transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+                    transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                   }}
                 />
               )
