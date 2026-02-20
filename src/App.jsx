@@ -144,7 +144,7 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
         label="Screen"
         options={[
           { label: 'First publish', value: 'first-publish' },
-          { label: 'Updates', value: 'updates' },
+          { label: 'App has updates', value: 'updates' },
         ]}
         value={screen}
         onChange={onScreenChange}
@@ -211,7 +211,7 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#0a0a0a' }}>Public</span>
                 <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#525252' }}>
-                  Visible on Explore, anyone can search for and view
+                  Discoverable by everyone on Explore
                 </span>
               </div>
             </div>
@@ -219,7 +219,7 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
               ? <CheckCircle size={32} weight="fill" color="#0a0a0a" />
               : <Circle size={32} color="#d4d4d4" />}
           </button>
-          {/* Unlisted */}
+          {/* Private Link */}
           <button
             onClick={() => onSelect('unlisted')}
             style={{
@@ -235,9 +235,9 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
                 <LinkSimple size={40} color={visibility === 'unlisted' ? '#0a0a0a' : '#737373'} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: visibility === 'unlisted' ? '#0a0a0a' : '#737373' }}>Unlisted</span>
+                <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: visibility === 'unlisted' ? '#0a0a0a' : '#737373' }}>Private Link</span>
                 <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#737373' }}>
-                  Not visible on Explore or search, anyone with the link can view
+                  Only people with your link can open it
                 </span>
               </div>
             </div>
@@ -320,7 +320,7 @@ function ShareScreen({ mode, screen }) {
 
   const isShare = activeTab === 'share'
   const isInvite = activeTab === 'invite'
-  const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
+  const visibilityLabel = visibility === 'public' ? 'Public' : 'Private Link'
 
   const handlePublish = () => {
     setPublishing(true)
@@ -568,7 +568,7 @@ function ShareScreen({ mode, screen }) {
                           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                             <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#949494' }}>Public</span>
                             <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#aaaaaa' }}>
-                              Visible on Explore, anyone can search for and view
+                              Discoverable by everyone on Explore
                             </span>
                           </div>
                           {visibility === 'public'
@@ -586,9 +586,9 @@ function ShareScreen({ mode, screen }) {
                         >
                           <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#949494'} />
                           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'unlisted' ? '#0a0a0a' : '#949494' }}>Unlisted</span>
+                            <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'unlisted' ? '#0a0a0a' : '#949494' }}>Private Link</span>
                             <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#aaaaaa' }}>
-                              Not visible on Explore or search, but anyone with the link can view
+                              Only people with your link can open it
                             </span>
                           </div>
                           {visibility === 'unlisted'
