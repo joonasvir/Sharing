@@ -645,7 +645,7 @@ function ShareScreen({ mode, screen }) {
 
                   {/* Action button */}
                   <button
-                    onClick={() => { !publishing && !unpublishing && (published ? handleShare() : handlePublish()) }}
+                    onClick={() => { !publishing && !unpublishing && (published && !isUpdates ? handleShare() : handlePublish()) }}
                     style={{
                       width: '100%', background: '#171717', color: '#fafafa',
                       border: 'none', borderRadius: 999, padding: '18px 30px',
