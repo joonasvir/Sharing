@@ -391,12 +391,11 @@ function ShareScreen({ mode }) {
       >
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Top spacer — centers orb on share tab, collapses on invite */}
+        {/* Top spacer — small fixed gap, transitions between tabs */}
         <div style={{
-          flexGrow: isInvite ? 0 : 1,
-          flexBasis: isInvite ? 16 : 0,
+          height: isInvite ? 16 : 40,
           flexShrink: 0,
-          transition: `all ${ease}`,
+          transition: `height ${ease}`,
         }} />
 
         {/* App icon row — shared element, stays in place */}
