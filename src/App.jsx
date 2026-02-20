@@ -17,11 +17,9 @@ import {
 /* ─── App Card Carousel (publish animation) ─── */
 
 const CAROUSEL_APPS = [
-  { hue: 60 },
-  { hue: 180 },
-  { hue: 0, isMain: true },
-  { hue: 35 },
-  { hue: 280 },
+  { title: 'Meditation', subtitle: 'moments', hue: 0 },
+  { title: 'Meditation', subtitle: 'moments', hue: 0, isMain: true },
+  { title: 'Meditation', subtitle: 'moments', hue: 0 },
 ]
 
 const MOCK_USERS = [
@@ -31,7 +29,8 @@ const MOCK_USERS = [
   { name: 'AlexPatel', handle: 'AlexP_2024', hue: 320 },
 ]
 
-function AppCarousel({ published }) {
+function AppCarousel({ published, isInvite }) {
+  const isShare = !isInvite
   const mainIndex = CAROUSEL_APPS.findIndex(a => a.isMain)
 
   return (
@@ -39,67 +38,138 @@ function AppCarousel({ published }) {
       width: '100%',
       display: 'flex',
       justifyContent: 'center',
-      padding: '8px 0',
     }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: published ? 10 : 0,
-        transition: `gap 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${published ? '0.15s' : '0s'}`,
+        gap: isShare && published ? 12 : 0,
+        transition: 'gap 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
       }}>
         {CAROUSEL_APPS.map((app, i) => {
           const isMain = app.isMain
-          const delay = published ? 0.12 + Math.abs(i - mainIndex) * 0.07 : 0
+          const delay = isShare && published ? 0.08 + Math.abs(i - mainIndex) * 0.06 : 0
 
-          let width, padding, bg, shadow, iconSize, scale, opacity
+          let cardWidth, orbSize, cardPadding, cardBg, cardBorder, showCard, opacity, scale
 
-          if (!published) {
+          if (isInvite) {
             if (isMain) {
-              width = 120; padding = '0'; bg = 'transparent'; shadow = 'none'
-              iconSize = 120; scale = 1; opacity = 1
+              cardWidth = 90; orbSize = 90; cardPadding = '0'
+              cardBg = 'transparent'; cardBorder = '1px solid transparent'
+              showCard = false; opacity = 1; scale = 1
             } else {
-              width = 0; padding = '0'; bg = 'transparent'; shadow = 'none'
-              iconSize = 0; scale = 0.5; opacity = 0
+              cardWidth = 0; orbSize = 0; cardPadding = '0'
+              cardBg = 'transparent'; cardBorder = '1px solid transparent'
+              showCard = false; opacity = 0; scale = 0.5
+            }
+          } else if (!published) {
+            if (isMain) {
+              cardWidth = 175; orbSize = 115; cardPadding = '20px'
+              cardBg = 'rgba(245,245,245,0.6)'; cardBorder = '1px solid rgba(0,0,0,0.05)'
+              showCard = true; opacity = 1; scale = 1
+            } else {
+              cardWidth = 0; orbSize = 0; cardPadding = '0'
+              cardBg = 'transparent'; cardBorder = '1px solid transparent'
+              showCard = false; opacity = 0; scale = 0.8
             }
           } else {
-            width = 60; padding = '10px 0'; bg = '#fff'
-            shadow = '0 2px 8px rgba(0,0,0,0.06)'; iconSize = 42
-            scale = 1; opacity = 1
+            cardWidth = 135; orbSize = 85; cardPadding = '16px 12px'
+            cardBg = 'rgba(245,245,245,0.6)'; cardBorder = '1px solid rgba(0,0,0,0.05)'
+            showCard = true; opacity = 1; scale = 1
           }
 
           return (
             <div
               key={i}
               style={{
-                width,
+                width: cardWidth,
                 flexShrink: 0,
-                padding,
-                background: bg,
-                borderRadius: 16,
+                background: cardBg,
+                borderRadius: 24,
+                border: cardBorder,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                boxShadow: shadow,
-                transform: `scale(${scale})`,
+                padding: cardPadding,
+                gap: showCard ? 8 : 0,
+                position: 'relative',
                 opacity,
-                overflow: 'hidden',
-                transition: `all 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+                transform: `scale(${scale})`,
+                overflow: isMain && isInvite ? 'visible' : 'hidden',
+                transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
               }}
             >
-              <img
-                src="/orb.png"
-                alt=""
-                style={{
-                  width: iconSize,
-                  height: iconSize,
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  filter: app.hue !== 0 ? `hue-rotate(${app.hue}deg)` : 'none',
-                  flexShrink: 0,
-                  transition: `all 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
-                }}
-              />
+              {/* Status icon */}
+              <div style={{
+                position: 'absolute',
+                top: 12, right: 12,
+                opacity: showCard ? 0.4 : 0,
+                transition: `opacity 0.4s ease ${delay}s`,
+              }}>
+                {isMain && published
+                  ? <GlobeSimple size={18} color="#0a0a0a" />
+                  : <LockSimple size={18} color="#0a0a0a" />}
+              </div>
+
+              {/* Orb — shared element for main card */}
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <img
+                  src="/orb.png"
+                  alt=""
+                  style={{
+                    width: orbSize,
+                    height: orbSize,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    filter: app.hue !== 0 ? `hue-rotate(${app.hue}deg)` : 'none',
+                    flexShrink: 0,
+                    transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+                  }}
+                />
+                {/* Invite user badges — only on main card */}
+                {isMain && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: -6, left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    opacity: isInvite ? 1 : 0,
+                    transition: `opacity 0.3s ease ${isInvite ? '0.15s' : '0s'}`,
+                    pointerEvents: 'none',
+                  }}>
+                    {[200, 100, 320].map((hue, j) => (
+                      <img
+                        key={j}
+                        src="/orb.png"
+                        alt=""
+                        style={{
+                          width: 24, height: 24, borderRadius: '50%',
+                          objectFit: 'cover', border: '2px solid #fff',
+                          marginLeft: j > 0 ? -6 : 0,
+                          filter: `hue-rotate(${hue}deg) brightness(0.8)`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* App name */}
+              <div style={{
+                textAlign: 'center',
+                maxHeight: showCard ? 40 : 0,
+                opacity: showCard ? 1 : 0,
+                overflow: 'hidden',
+                transition: `all 0.4s ease ${delay}s`,
+              }}>
+                <span style={{ fontSize: 15, fontWeight: 500, color: '#C47020' }}>
+                  {app.title}
+                </span>
+                <br />
+                <span style={{ fontSize: 15, fontWeight: 500, color: '#0a0a0a' }}>
+                  {app.subtitle}
+                </span>
+              </div>
             </div>
           )
         })}
@@ -376,22 +446,17 @@ function ShareScreen({ mode }) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
   const [published, setPublished] = useState(false)
-  const [settled, setSettled] = useState(false)
   const clarity = mode === 'clarity'
 
   const isShare = activeTab === 'share'
   const isInvite = activeTab === 'invite'
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
-  const contentVisible = !published || settled
-  const orbSize = isInvite ? 90 : (published && settled ? 0 : 120)
 
   const handlePublish = () => {
     setPublished(true)
-    setTimeout(() => setSettled(true), 1200)
   }
 
   const handleUnpublish = () => {
-    setSettled(false)
     setPublished(false)
   }
 
@@ -431,59 +496,8 @@ function ShareScreen({ mode }) {
           minHeight: 0,
           transition: 'flex-grow 0.45s cubic-bezier(0.32, 0.72, 0, 1), padding 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
-          {/* Shared orb — single element, transitions size between tabs */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
-            <img
-              src="/orb.png"
-              alt=""
-              style={{
-                width: orbSize,
-                height: orbSize,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                transition: 'all 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
-              }}
-            />
-            {/* Invite user badges */}
-            <div style={{
-              position: 'absolute',
-              bottom: -6,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              opacity: isInvite ? 1 : 0,
-              transition: `opacity 0.3s ease ${isInvite ? '0.15s' : '0s'}`,
-              pointerEvents: 'none',
-            }}>
-              {[200, 100, 320].map((hue, i) => (
-                <img
-                  key={i}
-                  src="/orb.png"
-                  alt=""
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '2px solid #fff',
-                    marginLeft: i > 0 ? -6 : 0,
-                    filter: `hue-rotate(${hue}deg) brightness(0.8)`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Published carousel (share tab only) */}
-          <div style={{
-            width: '100%',
-            maxHeight: isShare && published && settled ? 150 : 0,
-            opacity: isShare && published && settled ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'all 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
-          }}>
-            <AppCarousel published={published} />
-          </div>
+          {/* Card carousel — shared element transition for main orb */}
+          <AppCarousel published={published} isInvite={isInvite} />
 
           {/* Copy — share and invite crossfade in same space */}
           <div style={{
@@ -493,16 +507,16 @@ function ShareScreen({ mode }) {
             {/* Share copy — takes layout space */}
             <div style={{
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              opacity: isShare && contentVisible ? 1 : 0,
+              opacity: isShare ? 1 : 0,
               transition: 'opacity 0.35s ease',
             }}>
-              <h1 style={{ fontSize: 24, fontWeight: settled ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                {settled ? 'Your mini-app is published!' : 'Publish your app to share it'}
+              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                {published ? 'Your mini-app is published!' : 'Your mini-app is private. Publish it to share'}
               </h1>
               <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                {settled
+                {published
                   ? 'If you want to use it with your friends only, use the Invite tab.'
-                  : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
+                  : 'None of your data is shared upon publish'}
               </p>
             </div>
             {/* Invite copy — overlaps share copy */}
@@ -606,10 +620,10 @@ function ShareScreen({ mode }) {
         <div style={{
           flexShrink: 0,
           maxHeight: isShare ? 400 : 0,
-          opacity: isShare && contentVisible ? 1 : 0,
+          opacity: isShare ? 1 : 0,
           overflow: 'hidden',
           transition: 'all 0.35s ease',
-          pointerEvents: isShare && contentVisible ? 'auto' : 'none',
+          pointerEvents: isShare ? 'auto' : 'none',
         }}>
           {clarity ? (
             /* ─── Clarity: options + button inside gray area ─── */
