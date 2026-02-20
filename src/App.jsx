@@ -635,13 +635,13 @@ function ShareScreen({ mode, screen }) {
                     </div>
                   )}
 
-                  {/* Published / Minimal: collapsed visibility row */}
+                  {/* Unpublished minimal: collapsed visibility row above button */}
                   <div style={{
-                    maxHeight: (published || !clarity) ? 100 : 0,
-                    opacity: (published || !clarity) ? 1 : 0,
+                    maxHeight: (!clarity && !published) ? 100 : 0,
+                    opacity: (!clarity && !published) ? 1 : 0,
                     overflow: 'hidden',
                     transition: `all ${ease}`,
-                    marginBottom: (published || !clarity) ? 16 : 0,
+                    marginBottom: (!clarity && !published) ? 16 : 0,
                   }}>
                     <button
                       onClick={() => setSheetOpen(true)}
@@ -682,6 +682,35 @@ function ShareScreen({ mode, screen }) {
                         ? <><Export size={22} color="#fafafa" /> Share mini-app</>
                         : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
                   </button>
+
+                  {/* Published: compact visibility row below button */}
+                  <div style={{
+                    maxHeight: published ? 80 : 0,
+                    opacity: published ? 1 : 0,
+                    overflow: 'hidden',
+                    transition: `all ${ease}`,
+                    marginTop: published ? 12 : 0,
+                  }}>
+                    <button
+                      onClick={() => setSheetOpen(true)}
+                      style={{
+                        background: '#fff', borderRadius: 20, padding: '14px 16px 14px 10px',
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
+                      }}
+                    >
+                      <div style={{ flexShrink: 0, padding: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {visibility === 'public'
+                          ? <GlobeSimple size={24} color="#0a0a0a" />
+                          : <LinkSimple size={24} color="#0a0a0a" />}
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
+                        <span style={{ fontSize: 11, lineHeight: '13px', color: '#737373', fontWeight: 400 }}>Visibility</span>
+                        <span style={{ fontSize: 14, lineHeight: '16px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
+                      </div>
+                      <CaretRight size={16} weight="bold" color="#0a0a0a" style={{ opacity: 0.7 }} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Unpublish link */}
