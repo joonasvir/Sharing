@@ -131,16 +131,6 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
       boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)',
     }}>
       <SegmentedControl
-        label="Screen"
-        options={[
-          { label: 'First publish', value: 'first-publish' },
-          { label: 'Updates', value: 'updates' },
-        ]}
-        value={screen}
-        onChange={onScreenChange}
-      />
-      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 -4px' }} />
-      <SegmentedControl
         label="Layout"
         options={[
           { label: 'Clarity', value: 'clarity' },
@@ -148,6 +138,16 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
         ]}
         value={mode}
         onChange={onModeChange}
+      />
+      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 -4px' }} />
+      <SegmentedControl
+        label="Screen"
+        options={[
+          { label: 'First publish', value: 'first-publish' },
+          { label: 'Updates', value: 'updates' },
+        ]}
+        value={screen}
+        onChange={onScreenChange}
       />
     </div>
   )
@@ -309,7 +309,6 @@ function ShareScreen({ mode, screen }) {
   const [published, setPublished] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [unpublishing, setUnpublishing] = useState(false)
-  const [updating, setUpdating] = useState(false)
   const clarity = mode === 'clarity'
   const isUpdates = screen === 'updates'
 
@@ -317,12 +316,12 @@ function ShareScreen({ mode, screen }) {
     setPublished(screen === 'updates')
     setPublishing(false)
     setUnpublishing(false)
-    setUpdating(false)
   }, [screen])
 
   const isShare = activeTab === 'share'
   const isInvite = activeTab === 'invite'
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
+  const orbSize = isInvite ? 90 : (published && visibility === 'public' ? 65 : 120)
 
   const handlePublish = () => {
     setPublishing(true)
@@ -400,12 +399,11 @@ function ShareScreen({ mode, screen }) {
       >
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Top spacer — pushes orb+copy toward center on share, collapses on invite */}
+        {/* Top spacer — small gap on invite, none on share */}
         <div style={{
-          flexGrow: isInvite ? 0 : 1,
-          flexBasis: isInvite ? 16 : 0,
-          flexShrink: 1,
-          transition: `all ${ease}`,
+          height: isInvite ? 16 : 0,
+          flexShrink: 0,
+          transition: `height ${ease}`,
         }} />
 
         {/* App icon row — shared element, stays in place */}
@@ -517,12 +515,12 @@ function ShareScreen({ mode, screen }) {
               width: '50%', height: '100%',
               display: 'flex', flexDirection: 'column',
             }}>
-              {/* Share copy — right below orb */}
+              {/* Share copy — centered in space between orb and controls */}
               <div style={{
-                flexShrink: 0, display: 'flex', flexDirection: 'column',
-                alignItems: 'center',
-                textAlign: 'center', padding: '20px 30px 0', gap: 12,
-                position: 'relative',
+                flex: 1, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                textAlign: 'center', padding: `0 30px ${orbSize}px`,
+                gap: 12, position: 'relative', minHeight: 0,
               }}>
                 {/* Unpublished copy — takes layout space */}
                 <div style={{
@@ -541,44 +539,19 @@ function ShareScreen({ mode, screen }) {
                 <div style={{
                   position: 'absolute', inset: 0,
                   display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-                  padding: '20px 30px 0',
+                  justifyContent: 'center', padding: `0 30px ${orbSize}px`,
                   opacity: published ? 1 : 0,
                   transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
                   pointerEvents: published ? 'auto' : 'none',
                 }}>
                   <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                    Your mini-app is published!
+                    {isUpdates ? 'Your app has unpublished updates. Publish updates to share' : 'Your mini-app is published!'}
                   </h1>
                   <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                    If you want to use it with your friends only, use the Invite tab.
+                    {isUpdates ? 'None of your data is shared upon publish' : 'If you want to use it with your friends only, use the Invite tab.'}
                   </p>
-                  {isUpdates && (
-                    <button
-                      onClick={() => {
-                        if (!updating) {
-                          setUpdating(true)
-                          setTimeout(() => setUpdating(false), 2000)
-                        }
-                      }}
-                      style={{
-                        marginTop: 4,
-                        background: '#171717', color: '#fafafa',
-                        border: 'none', borderRadius: 999, padding: '14px 32px',
-                        fontSize: 15, fontWeight: 500, cursor: updating ? 'default' : 'pointer',
-                        display: 'flex', alignItems: 'center', gap: 7.5,
-                        fontFamily: 'inherit',
-                        boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)',
-                      }}
-                    >
-                      <CloudArrowUp size={20} color="#fafafa" />
-                      {updating ? 'Updating...' : 'Update'}
-                    </button>
-                  )}
                 </div>
               </div>
-
-              {/* Spacer — pushes controls to bottom */}
-              <div style={{ flex: 1 }} />
 
               {/* Share bottom controls */}
               <div style={{ flexShrink: 0, padding: '0 20px' }}>
@@ -711,9 +684,11 @@ function ShareScreen({ mode, screen }) {
                   >
                     {publishing
                       ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
-                      : published
-                        ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                        : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+                      : isUpdates
+                        ? <><CloudArrowUp size={22} color="#fafafa" /> Publish updates</>
+                        : published
+                          ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                          : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
                   </button>
                 </div>
 
