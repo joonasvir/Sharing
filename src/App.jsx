@@ -69,6 +69,15 @@ function CloudUploadIcon({ size = 24, color = '#fafafa' }) {
   )
 }
 
+function LockIcon({ size = 20, color = '#ef4444' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <rect x="5" y="11" width="14" height="10" rx="2" stroke={color} strokeWidth="2" />
+      <path d="M8 11V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V11" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function CheckIcon({ size = 32 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
@@ -83,6 +92,41 @@ function EmptyCircle({ size = 32 }) {
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
       <circle cx="16" cy="16" r="15" stroke="#d4d4d4" strokeWidth="1.5" />
     </svg>
+  )
+}
+
+/* ─── Orb Cluster ─── */
+
+function OrbCluster() {
+  const orbs = [
+    { size: 120, x: 140, y: 0, hue: 0 },       // center top (original orange)
+    { size: 75, x: 55, y: 30, hue: 210 },       // left (dark blue)
+    { size: 75, x: 235, y: 30, hue: 190 },      // right (light blue)
+    { size: 70, x: 95, y: 110, hue: 30 },       // bottom-left (brown)
+    { size: 70, x: 185, y: 110, hue: 160 },     // bottom-right (teal)
+  ]
+
+  return (
+    <div style={{ position: 'relative', width: 310, height: 190 }}>
+      {orbs.map((orb, i) => (
+        <img
+          key={i}
+          src="/orb.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            width: orb.size,
+            height: orb.size,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            left: orb.x,
+            top: orb.y,
+            filter: orb.hue ? `hue-rotate(${orb.hue}deg)` : 'none',
+            transform: 'translateX(-50%)',
+          }}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -350,6 +394,7 @@ function ShareScreen({ mode }) {
   const [activeTab, setActiveTab] = useState('share')
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
+  const [published, setPublished] = useState(false)
   const minimal = mode === 'minimal'
 
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
@@ -457,24 +502,30 @@ function ShareScreen({ mode }) {
           textAlign: 'center',
           gap: 25,
         }}>
-          <img src="/orb.png" alt="" style={{
-            width: minimal ? 80 : 120,
-            height: minimal ? 80 : 120,
-            borderRadius: '50%',
-            objectFit: 'cover',
-            transition: 'all 0.3s ease',
-          }} />
+          {published ? (
+            <OrbCluster />
+          ) : (
+            <img src="/orb.png" alt="" style={{
+              width: minimal ? 80 : 120,
+              height: minimal ? 80 : 120,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              transition: 'all 0.3s ease',
+            }} />
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
             <h1 style={{
               fontSize: minimal ? 20 : 24,
-              fontWeight: 500,
+              fontWeight: published ? 600 : 500,
               lineHeight: minimal ? '24px' : '28px',
               color: '#0a0a0a',
               transition: 'all 0.3s ease',
             }}>
-              {minimal
-                ? 'Publish to share it.'
-                : 'Your mini-app isn\u2019t published yet. Publish to share it.'}
+              {published
+                ? 'Your mini-app is published!'
+                : minimal
+                  ? 'Publish to share it.'
+                  : 'Your mini-app isn\u2019t published yet. Publish to share it.'}
             </h1>
             {!minimal && (
               <p style={{
@@ -484,7 +535,9 @@ function ShareScreen({ mode }) {
                 color: '#737373',
                 maxWidth: 306,
               }}>
-                None of your app data is shared upon publishing. Other users will see an empty version of your app.
+                {published
+                  ? 'If you want to use it with your friends only, use the Invite tab.'
+                  : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
               </p>
             )}
           </div>
@@ -493,7 +546,7 @@ function ShareScreen({ mode }) {
         {/* Bottom section */}
         <div style={{
           flexShrink: 0,
-          margin: '0 20px 34px',
+          margin: '0 20px 0',
           background: minimal ? 'transparent' : '#f5f5f5',
           borderRadius: 32,
           padding: minimal ? '0' : 20,
@@ -531,28 +584,69 @@ function ShareScreen({ mode }) {
             </button>
           )}
 
-          <button style={{
-            width: '100%',
-            background: '#171717',
-            color: '#fafafa',
-            border: 'none',
-            borderRadius: 999,
-            padding: '18px 30px',
-            fontSize: 15,
-            fontWeight: 500,
-            lineHeight: '20px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 7.5,
-            boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)',
-            fontFamily: 'inherit',
-          }}>
-            <CloudUploadIcon />
-            Publish
+          <button
+            onClick={() => {
+              if (!published) setPublished(true)
+            }}
+            style={{
+              width: '100%',
+              background: '#171717',
+              color: '#fafafa',
+              border: 'none',
+              borderRadius: 999,
+              padding: '18px 30px',
+              fontSize: 15,
+              fontWeight: 500,
+              lineHeight: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 7.5,
+              boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)',
+              fontFamily: 'inherit',
+            }}
+          >
+            {published ? (
+              <>
+                <ShareIcon size={22} color="#fafafa" />
+                Share mini-app
+              </>
+            ) : (
+              <>
+                <CloudUploadIcon />
+                Publish
+              </>
+            )}
           </button>
         </div>
+
+        {/* Unpublish link */}
+        {published && (
+          <button
+            onClick={() => setPublished(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '20px 0 34px',
+              fontFamily: 'inherit',
+              fontSize: 15,
+              fontWeight: 500,
+              color: '#ef4444',
+            }}
+          >
+            <LockIcon size={20} color="#ef4444" />
+            Unpublish your app
+          </button>
+        )}
+
+        {/* Spacer when not published */}
+        {!published && <div style={{ height: 34, flexShrink: 0 }} />}
       </div>
 
       {/* Visibility bottom sheet */}
