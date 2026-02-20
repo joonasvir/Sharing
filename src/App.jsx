@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   GlobeSimple,
   LinkSimple,
@@ -302,14 +302,23 @@ function Tabs({ activeTab, setActiveTab }) {
 
 /* ─── Share Screen ─── */
 
-function ShareScreen({ mode }) {
+function ShareScreen({ mode, screen }) {
   const [activeTab, setActiveTab] = useState('share')
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
   const [published, setPublished] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [unpublishing, setUnpublishing] = useState(false)
+  const [updating, setUpdating] = useState(false)
   const clarity = mode === 'clarity'
+  const isUpdates = screen === 'updates'
+
+  useEffect(() => {
+    setPublished(screen === 'updates')
+    setPublishing(false)
+    setUnpublishing(false)
+    setUpdating(false)
+  }, [screen])
 
   const isShare = activeTab === 'share'
   const isInvite = activeTab === 'invite'
@@ -534,7 +543,7 @@ function ShareScreen({ mode }) {
                   justifyContent: 'center', padding: '0 30px',
                   opacity: published ? 1 : 0,
                   transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
-                  pointerEvents: 'none',
+                  pointerEvents: published ? 'auto' : 'none',
                 }}>
                   <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
                     Your mini-app is published!
@@ -542,6 +551,28 @@ function ShareScreen({ mode }) {
                   <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
                     If you want to use it with your friends only, use the Invite tab.
                   </p>
+                  {isUpdates && (
+                    <button
+                      onClick={() => {
+                        if (!updating) {
+                          setUpdating(true)
+                          setTimeout(() => setUpdating(false), 2000)
+                        }
+                      }}
+                      style={{
+                        marginTop: 4,
+                        background: '#171717', color: '#fafafa',
+                        border: 'none', borderRadius: 999, padding: '14px 32px',
+                        fontSize: 15, fontWeight: 500, cursor: updating ? 'default' : 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 7.5,
+                        fontFamily: 'inherit',
+                        boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)',
+                      }}
+                    >
+                      <CloudArrowUp size={20} color="#fafafa" />
+                      {updating ? 'Updating...' : 'Update'}
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -629,7 +660,7 @@ function ShareScreen({ mode }) {
                         <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
                         <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
                       </div>
-                      <CaretRight size={24} weight="bold" color="#0a0a0a" />
+                      <CaretRight size={18} weight="bold" color="#0a0a0a" style={{ opacity: 0.7 }} />
                     </button>
                   </div>
 
