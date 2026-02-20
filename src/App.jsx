@@ -114,7 +114,96 @@ function SegmentedControl({ label, options, value, onChange }) {
   )
 }
 
-function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
+const DEFAULT_ANIM = {
+  duration: 0.8,
+  stagger: 0.06,
+  copyFadeDuration: 0.4,
+  copyFadeDelay: 0.35,
+  orbGap: 10,
+  mainOrbSize: 78,
+  sideOrbSize: 78,
+}
+
+function Slider({ label, value, min, max, step, onChange, unit = '' }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.45)' }}>{label}</span>
+        <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.3)', fontVariantNumeric: 'tabular-nums' }}>{value}{unit}</span>
+      </div>
+      <input
+        type="range"
+        min={min} max={max} step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        style={{
+          width: '100%', height: 4, appearance: 'none', WebkitAppearance: 'none',
+          background: 'rgba(255,255,255,0.12)', borderRadius: 2, outline: 'none',
+          cursor: 'pointer',
+        }}
+      />
+    </div>
+  )
+}
+
+function AnimationControls({ anim, onAnimChange }) {
+  const [open, setOpen] = useState(false)
+  const update = (key, val) => onAnimChange({ ...anim, [key]: val })
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+          padding: 0, fontFamily: 'inherit',
+        }}
+      >
+        <span style={{
+          fontSize: 11, fontWeight: 500, textTransform: 'uppercase',
+          letterSpacing: '0.06em', color: 'rgba(255,255,255,0.35)',
+        }}>Animation</span>
+        <CaretRight
+          size={10} weight="bold" color="rgba(255,255,255,0.25)"
+          style={{
+            transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+          }}
+        />
+      </button>
+      <div style={{
+        maxHeight: open ? 400 : 0,
+        opacity: open ? 1 : 0,
+        overflow: 'hidden',
+        transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 12 }}>
+          <Slider label="Duration" value={anim.duration} min={0.2} max={2.0} step={0.05} onChange={(v) => update('duration', v)} unit="s" />
+          <Slider label="Stagger delay" value={anim.stagger} min={0} max={0.2} step={0.01} onChange={(v) => update('stagger', v)} unit="s" />
+          <Slider label="Orb gap" value={anim.orbGap} min={0} max={30} step={1} onChange={(v) => update('orbGap', v)} unit="px" />
+          <Slider label="Main orb size" value={anim.mainOrbSize} min={50} max={120} step={1} onChange={(v) => update('mainOrbSize', v)} unit="px" />
+          <Slider label="Side orb size" value={anim.sideOrbSize} min={40} max={100} step={1} onChange={(v) => update('sideOrbSize', v)} unit="px" />
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
+          <Slider label="Copy fade duration" value={anim.copyFadeDuration} min={0.1} max={1.0} step={0.05} onChange={(v) => update('copyFadeDuration', v)} unit="s" />
+          <Slider label="Copy fade delay" value={anim.copyFadeDelay} min={0} max={0.8} step={0.05} onChange={(v) => update('copyFadeDelay', v)} unit="s" />
+          <button
+            onClick={() => onAnimChange({ ...DEFAULT_ANIM })}
+            style={{
+              background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8,
+              padding: '8px', fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.3)',
+              cursor: 'pointer', fontFamily: 'inherit', marginTop: 2,
+            }}
+          >
+            Reset to defaults
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Sidebar({ mode, onModeChange, screen, onScreenChange, anim, onAnimChange }) {
   return (
     <div style={{
       width: 260,
@@ -150,6 +239,8 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
         value={screen}
         onChange={onScreenChange}
       />
+      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 -4px' }} />
+      <AnimationControls anim={anim} onAnimChange={onAnimChange} />
     </div>
   )
 }
@@ -295,7 +386,7 @@ function Tabs({ activeTab, setActiveTab }) {
 
 /* ─── Share Screen ─── */
 
-function ShareScreen({ mode, screen }) {
+function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
   const [activeTab, setActiveTab] = useState('share')
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
@@ -381,7 +472,7 @@ function ShareScreen({ mode, screen }) {
     touchDirRef.current = null
   }
 
-  const ease = '0.8s cubic-bezier(0.32, 0.72, 0, 1)'
+  const ease = `${anim.duration}s cubic-bezier(0.32, 0.72, 0, 1)`
 
   const renderOrbRow = ({ forPage }) => {
     const showSide = forPage === 'share' && published && visibility === 'public'
@@ -389,7 +480,7 @@ function ShareScreen({ mode, screen }) {
       <div style={{
         flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        gap: showSide ? 10 : 0,
+        gap: showSide ? anim.orbGap : 0,
         transition: `all ${ease}`,
       }}>
         {APP_ORBS.map((orb, i) => {
@@ -397,9 +488,9 @@ function ShareScreen({ mode, screen }) {
           const mainIdx = 2
           const dist = Math.abs(i - mainIdx)
           const offsetDir = i < mainIdx ? -1 : 1
-          const delay = showSide ? 0.1 + dist * 0.06 : 0
-          const mainSize = forPage === 'invite' ? 90 : (published && visibility === 'public' ? 78 : 120)
-          const size = isMain ? mainSize : (showSide ? 78 : 0)
+          const delay = showSide ? 0.1 + dist * anim.stagger : 0
+          const mainSize = forPage === 'invite' ? 90 : (published && visibility === 'public' ? anim.mainOrbSize : 120)
+          const size = isMain ? mainSize : (showSide ? anim.sideOrbSize : 0)
 
           if (isMain) {
             return (
@@ -479,7 +570,7 @@ function ShareScreen({ mode, screen }) {
               borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
               opacity: showSide ? 1 : 0,
               transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
-              transition: `all 0.8s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+              transition: `all ${anim.duration}s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
             }} />
           )
         })}
@@ -523,7 +614,8 @@ function ShareScreen({ mode, screen }) {
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                textAlign: 'center', gap: 40,
+                textAlign: 'center', gap: published ? 30 : 20,
+                transition: `gap ${ease}`,
                 position: 'relative', minHeight: 0,
               }}>
                 <div style={{
@@ -553,7 +645,7 @@ function ShareScreen({ mode, screen }) {
                   <div style={{
                     display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
                     opacity: !published ? 1 : 0,
-                    transition: `opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1) ${!published ? '0.35s' : '0s'}`,
+                    transition: `opacity ${anim.copyFadeDuration}s cubic-bezier(0.32, 0.72, 0, 1) ${!published ? anim.copyFadeDelay + 's' : '0s'}`,
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
                       Your mini-app is private. Publish it to share
@@ -568,7 +660,7 @@ function ShareScreen({ mode, screen }) {
                     display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
                     justifyContent: 'center', padding: '0 30px',
                     opacity: published ? 1 : 0,
-                    transition: `opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1) ${published ? '0.35s' : '0s'}`,
+                    transition: `opacity ${anim.copyFadeDuration}s cubic-bezier(0.32, 0.72, 0, 1) ${published ? anim.copyFadeDelay + 's' : '0s'}`,
                     pointerEvents: published ? 'auto' : 'none',
                   }}>
                     <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
@@ -880,7 +972,7 @@ function ShareScreen({ mode, screen }) {
 
 /* ─── Mobile Controls ─── */
 
-function MobileControls({ mode, onModeChange, screen, onScreenChange }) {
+function MobileControls({ mode, onModeChange, screen, onScreenChange, anim, onAnimChange }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -952,6 +1044,8 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange }) {
             value={screen}
             onChange={onScreenChange}
           />
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+          <AnimationControls anim={anim} onAnimChange={onAnimChange} />
           <button
             onClick={() => setOpen(false)}
             style={{
@@ -976,6 +1070,7 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange }) {
 export default function App() {
   const [mode, setMode] = useState('clarity')
   const [screen, setScreen] = useState('first-publish')
+  const [anim, setAnim] = useState({ ...DEFAULT_ANIM })
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
@@ -992,8 +1087,8 @@ export default function App() {
         fontFamily: '"Selecta", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
         color: '#fff', overflow: 'hidden',
       }}>
-        <ShareScreen mode={mode} screen={screen} />
-        <MobileControls mode={mode} onModeChange={setMode} screen={screen} onScreenChange={setScreen} />
+        <ShareScreen mode={mode} screen={screen} anim={anim} />
+        <MobileControls mode={mode} onModeChange={setMode} screen={screen} onScreenChange={setScreen} anim={anim} onAnimChange={setAnim} />
       </div>
     )
   }
@@ -1005,9 +1100,9 @@ export default function App() {
       fontFamily: '"Selecta", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
       color: '#fff',
     }}>
-      <Sidebar mode={mode} onModeChange={setMode} screen={screen} onScreenChange={setScreen} />
+      <Sidebar mode={mode} onModeChange={setMode} screen={screen} onScreenChange={setScreen} anim={anim} onAnimChange={setAnim} />
       <IPhoneFrame>
-        <ShareScreen mode={mode} screen={screen} />
+        <ShareScreen mode={mode} screen={screen} anim={anim} />
       </IPhoneFrame>
     </div>
   )
