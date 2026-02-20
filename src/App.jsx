@@ -116,7 +116,7 @@ function SegmentedControl({ label, options, value, onChange }) {
 function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
   return (
     <div style={{
-      width: 220,
+      width: 260,
       display: 'flex',
       flexDirection: 'column',
       gap: 20,
@@ -133,8 +133,8 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
       <SegmentedControl
         label="Layout"
         options={[
-          { label: 'Clarity', value: 'clarity' },
-          { label: 'Minimal', value: 'minimal' },
+          { label: 'v1: Clarity', value: 'clarity' },
+          { label: 'v2: Minimal', value: 'minimal' },
         ]}
         value={mode}
         onChange={onModeChange}
