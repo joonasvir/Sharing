@@ -599,61 +599,47 @@ function ShareScreen({ mode, screen }) {
                     </div>
                   )}
 
-                  {/* Unpublished minimal: collapsed visibility row */}
+                  {/* Collapsed visibility row — smoothly sizes between unpublished and published */}
                   <div style={{
-                    maxHeight: (!clarity && !published) ? 100 : 0,
-                    opacity: (!clarity && !published) ? 1 : 0,
+                    maxHeight: (published || !clarity) ? 100 : 0,
+                    opacity: (published || !clarity) ? 1 : 0,
                     overflow: 'hidden',
                     transition: `all ${ease}`,
-                    marginBottom: (!clarity && !published) ? 16 : 0,
+                    marginBottom: (published || !clarity) ? (published ? 12 : 16) : 0,
                   }}>
                     <button
                       onClick={() => setSheetOpen(true)}
                       style={{
-                        background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
-                        display: 'flex', alignItems: 'center', gap: 12,
+                        background: '#fff',
+                        borderRadius: published ? 20 : 24,
+                        padding: published ? '14px 16px 14px 10px' : '20px 20px 20px 12px',
+                        display: 'flex', alignItems: 'center',
+                        gap: published ? 10 : 12,
                         cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
+                        transition: `all ${ease}`,
                       }}
                     >
-                      <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{
+                        flexShrink: 0,
+                        padding: published ? 3 : 5,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: `all ${ease}`,
+                      }}>
                         {visibility === 'public'
-                          ? <GlobeSimple size={32} color="#0a0a0a" />
-                          : <LinkSimple size={32} color="#0a0a0a" />}
+                          ? <GlobeSimple size={published ? 24 : 32} color="#0a0a0a" />
+                          : <LinkSimple size={published ? 24 : 32} color="#0a0a0a" />}
                       </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-                        <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
-                        <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: published ? 1 : 2, textAlign: 'left', transition: `all ${ease}` }}>
+                        <span style={{
+                          fontSize: published ? 11 : 12, lineHeight: published ? '13px' : '14px',
+                          color: '#737373', fontWeight: 400, transition: `all ${ease}`,
+                        }}>Visibility</span>
+                        <span style={{
+                          fontSize: published ? 14 : 16, lineHeight: published ? '16px' : '18px',
+                          color: '#0a0a0a', fontWeight: 500, transition: `all ${ease}`,
+                        }}>{visibilityLabel}</span>
                       </div>
-                      <CaretRight size={18} weight="bold" color="#0a0a0a" style={{ opacity: 0.7 }} />
-                    </button>
-                  </div>
-
-                  {/* Published: compact visibility row above button */}
-                  <div style={{
-                    maxHeight: published ? 80 : 0,
-                    opacity: published ? 1 : 0,
-                    overflow: 'hidden',
-                    transition: `all ${ease}`,
-                    marginBottom: published ? 12 : 0,
-                  }}>
-                    <button
-                      onClick={() => setSheetOpen(true)}
-                      style={{
-                        background: '#fff', borderRadius: 20, padding: '14px 16px 14px 10px',
-                        display: 'flex', alignItems: 'center', gap: 10,
-                        cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
-                      }}
-                    >
-                      <div style={{ flexShrink: 0, padding: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {visibility === 'public'
-                          ? <GlobeSimple size={24} color="#0a0a0a" />
-                          : <LinkSimple size={24} color="#0a0a0a" />}
-                      </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
-                        <span style={{ fontSize: 11, lineHeight: '13px', color: '#737373', fontWeight: 400 }}>Visibility</span>
-                        <span style={{ fontSize: 14, lineHeight: '16px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
-                      </div>
-                      <CaretRight size={16} weight="bold" color="#0a0a0a" style={{ opacity: 0.7 }} />
+                      <CaretRight size={published ? 16 : 18} weight="bold" color="#0a0a0a" style={{ opacity: 0.7 }} />
                     </button>
                   </div>
 
