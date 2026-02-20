@@ -707,7 +707,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                   {/* Unpublished: expanded visibility options (clarity only) */}
                   {clarity && (
                     <div style={{
-                      maxHeight: !published ? 300 : 0,
+                      maxHeight: !published ? 200 : 0,
                       opacity: !published ? 1 : 0,
                       overflow: 'hidden',
                       transition: `all ${ease}`,
@@ -752,24 +752,6 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                           {visibility === 'unlisted'
                             ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
                             : <Circle size={28} color="#d4d4d4" />}
-                        </button>
-                        <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
-                        <button
-                          onClick={() => { setVisibility('private'); handleUnpublish() }}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                            background: 'none', border: 'none', cursor: 'pointer',
-                            width: '100%', fontFamily: 'inherit', textAlign: 'left',
-                          }}
-                        >
-                          <LockSimple size={28} color="#949494" />
-                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: '#949494' }}>Private</span>
-                            <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: '#aaaaaa' }}>
-                              Only you
-                            </span>
-                          </div>
-                          <Circle size={28} color="#d4d4d4" />
                         </button>
                       </div>
                     </div>
