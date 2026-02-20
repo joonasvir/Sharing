@@ -14,6 +14,14 @@ import {
   Plus,
 } from '@phosphor-icons/react'
 
+const APP_ORBS = [
+  { hue: 200 },
+  { hue: 60 },
+  { hue: 0, isMain: true },
+  { hue: 280 },
+  { hue: 120 },
+]
+
 const MOCK_USERS = [
   { name: 'TomTaylr', handle: 'BookWorm2023', hue: 30 },
   { name: 'SarahJ', handle: 'SarahJ_Design', hue: 120 },
@@ -339,87 +347,126 @@ function ShareScreen({ mode }) {
           minHeight: 0,
           transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
-          {/* App icon with status badge */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
-            <img
-              src="/orb.png"
-              alt=""
-              style={{
-                width: isInvite ? 90 : 120,
-                height: isInvite ? 90 : 120,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-              }}
-            />
-            {/* Status badge — glassy circle */}
-            <div style={{
-              position: 'absolute',
-              top: -2,
-              right: -6,
-              width: 36, height: 36,
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.85)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              opacity: isInvite ? 0 : 1,
-              transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-            }}>
-              {published && visibility === 'public'
-                ? <GlobeSimple size={18} color="#0a0a0a" />
-                : published && visibility === 'unlisted'
-                  ? <LinkSimple size={18} color="#0a0a0a" />
-                  : <LockSimple size={18} color="#0a0a0a" />}
-            </div>
-            {/* Invite user badges */}
-            <div style={{
-              position: 'absolute',
-              bottom: -6, left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              opacity: isInvite ? 1 : 0,
-              transition: `opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${isInvite ? '0.1s' : '0s'}`,
-              pointerEvents: 'none',
-            }}>
-              {[200, 100, 320].map((hue, j) => (
+          {/* App icon row — main orb + side orbs fan out on publish */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: isShare && published ? 10 : 0,
+            transition: 'gap 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+          }}>
+            {APP_ORBS.map((orb, i) => {
+              const isMain = orb.isMain
+              const mainIdx = 2
+              const dist = Math.abs(i - mainIdx)
+              const delay = isShare && published ? 0.06 + dist * 0.05 : 0
+              const showSide = isShare && published
+              const size = isMain
+                ? (isInvite ? 90 : (published ? 65 : 120))
+                : (showSide ? 65 : 0)
+
+              if (isMain) {
+                return (
+                  <div key={i} style={{ position: 'relative', flexShrink: 0 }}>
+                    <img
+                      src="/orb.png"
+                      alt=""
+                      style={{
+                        width: size, height: size,
+                        borderRadius: '50%', objectFit: 'cover',
+                        transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1)`,
+                      }}
+                    />
+                    {/* Status badge */}
+                    <div style={{
+                      position: 'absolute', top: -2, right: -6,
+                      width: 36, height: 36, borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.85)',
+                      backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      opacity: isInvite ? 0 : 1,
+                      transform: `scale(${published && isShare ? 0.8 : 1})`,
+                      transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+                    }}>
+                      {published && visibility === 'public'
+                        ? <GlobeSimple size={18} color="#0a0a0a" />
+                        : published && visibility === 'unlisted'
+                          ? <LinkSimple size={18} color="#0a0a0a" />
+                          : <LockSimple size={18} color="#0a0a0a" />}
+                    </div>
+                    {/* Invite user badges */}
+                    <div style={{
+                      position: 'absolute', bottom: -6, left: '50%',
+                      transform: 'translateX(-50%)', display: 'flex',
+                      opacity: isInvite ? 1 : 0,
+                      transition: `opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${isInvite ? '0.1s' : '0s'}`,
+                      pointerEvents: 'none',
+                    }}>
+                      {[200, 100, 320].map((hue, j) => (
+                        <img key={j} src="/orb.png" alt="" style={{
+                          width: 24, height: 24, borderRadius: '50%',
+                          objectFit: 'cover', border: '2px solid #fff',
+                          marginLeft: j > 0 ? -6 : 0,
+                          filter: `hue-rotate(${hue}deg) brightness(0.8)`,
+                        }} />
+                      ))}
+                    </div>
+                  </div>
+                )
+              }
+
+              return (
                 <img
-                  key={j}
+                  key={i}
                   src="/orb.png"
                   alt=""
                   style={{
-                    width: 24, height: 24, borderRadius: '50%',
-                    objectFit: 'cover', border: '2px solid #fff',
-                    marginLeft: j > 0 ? -6 : 0,
-                    filter: `hue-rotate(${hue}deg) brightness(0.8)`,
+                    width: size, height: size,
+                    borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+                    filter: `hue-rotate(${orb.hue}deg)`,
+                    opacity: showSide ? 0.85 : 0,
+                    transform: `scale(${showSide ? 1 : 0.5})`,
+                    transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                   }}
                 />
-              ))}
-            </div>
+              )
+            })}
           </div>
 
-          {/* Copy — share and invite crossfade in same space */}
+          {/* Copy — share (unpublished / published) and invite crossfade */}
           <div style={{
             position: 'relative', padding: '0 30px',
             display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
           }}>
-            {/* Share copy — takes layout space */}
+            {/* Share unpublished copy — takes layout space */}
             <div style={{
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              opacity: isShare ? 1 : 0,
+              opacity: isShare && !published ? 1 : 0,
               transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                {published ? 'Your mini-app is published!' : 'Your mini-app is private. Publish it to share'}
+                Your mini-app is private. Publish it to share
               </h1>
               <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                {published
-                  ? 'If you want to use it with your friends only, use the Invite tab.'
-                  : 'None of your data is shared upon publish'}
+                None of your data is shared upon publish
               </p>
             </div>
-            {/* Invite copy — overlaps share copy */}
+            {/* Share published copy — overlaps */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+              justifyContent: 'center', padding: '0 30px',
+              opacity: isShare && published ? 1 : 0,
+              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              pointerEvents: 'none',
+            }}>
+              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                Your mini-app is published!
+              </h1>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                If you want to use it with your friends only, use the Invite tab.
+              </p>
+            </div>
+            {/* Invite copy — overlaps */}
             <div style={{
               position: 'absolute', inset: 0,
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
