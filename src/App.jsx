@@ -323,11 +323,23 @@ function VisibilitySheet({ open, visibility, onSelect, onClose }) {
 /* ─── Tabs ─── */
 
 function Tabs({ activeTab, setActiveTab }) {
+  const isShare = activeTab === 'share'
   return (
     <div style={{
       margin: '20px 27px 0', background: 'rgba(246,246,246,0.5)', borderRadius: 155,
       display: 'flex', padding: 4, position: 'relative', flexShrink: 0,
     }}>
+      <div style={{
+        position: 'absolute',
+        top: 4, bottom: 4, left: 4,
+        width: 'calc(50% - 4px)',
+        borderRadius: 155,
+        background: '#fff',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+        transform: isShare ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+        zIndex: 0,
+      }} />
       {['share', 'invite'].map(tab => (
         <button
           key={tab}
@@ -336,10 +348,9 @@ function Tabs({ activeTab, setActiveTab }) {
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
             gap: 6, padding: '16px 0', borderRadius: 155, border: 'none', cursor: 'pointer',
             fontSize: 17.7, fontWeight: 500, color: '#191919',
-            background: activeTab === tab ? '#fff' : 'transparent',
-            boxShadow: activeTab === tab ? '0 4px 12px rgba(0,0,0,0.12)' : 'none',
+            background: 'transparent',
             opacity: activeTab === tab ? 1 : 0.5,
-            transition: 'all 0.2s ease',
+            transition: 'opacity 0.3s ease',
             position: 'relative', zIndex: 1, fontFamily: 'inherit',
           }}
         >
@@ -352,6 +363,7 @@ function Tabs({ activeTab, setActiveTab }) {
       <div style={{
         boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.07)',
         borderRadius: 'inherit', position: 'absolute', inset: 0, pointerEvents: 'none',
+        zIndex: 2,
       }} />
     </div>
   )
@@ -408,7 +420,7 @@ function ShareScreen({ mode }) {
         {/* Hero area — flex-grows on share tab (centers content), compact on invite */}
         <div style={{
           flexGrow: isShare ? 1 : 0,
-          flexShrink: 0,
+          flexShrink: isShare ? 1 : 0,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -416,6 +428,7 @@ function ShareScreen({ mode }) {
           paddingTop: isInvite ? 20 : 0,
           gap: 12,
           textAlign: 'center',
+          minHeight: 0,
           transition: 'flex-grow 0.45s cubic-bezier(0.32, 0.72, 0, 1), padding 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
           {/* Shared orb — single element, transitions size between tabs */}
@@ -472,40 +485,42 @@ function ShareScreen({ mode }) {
             <AppCarousel published={published} />
           </div>
 
-          {/* Share copy */}
+          {/* Copy — share and invite crossfade in same space */}
           <div style={{
+            position: 'relative', padding: '0 30px',
             display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-            padding: '0 30px',
-            maxHeight: isShare ? 200 : 0,
-            opacity: isShare && contentVisible ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'all 0.35s ease',
           }}>
-            <h1 style={{ fontSize: 24, fontWeight: settled ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
-              {settled ? 'Your mini-app is published!' : 'Publish your app to share it'}
-            </h1>
-            <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-              {settled
-                ? 'If you want to use it with your friends only, use the Invite tab.'
-                : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
-            </p>
-          </div>
-
-          {/* Invite copy */}
-          <div style={{
-            display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-            padding: '0 30px',
-            maxHeight: isInvite ? 200 : 0,
-            opacity: isInvite ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'all 0.35s ease',
-          }}>
-            <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-              Use this app together
-            </h1>
-            <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-              This is a short two line explainer that's specific to the app type
-            </p>
+            {/* Share copy — takes layout space */}
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+              opacity: isShare && contentVisible ? 1 : 0,
+              transition: 'opacity 0.35s ease',
+            }}>
+              <h1 style={{ fontSize: 24, fontWeight: settled ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                {settled ? 'Your mini-app is published!' : 'Publish your app to share it'}
+              </h1>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                {settled
+                  ? 'If you want to use it with your friends only, use the Invite tab.'
+                  : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
+              </p>
+            </div>
+            {/* Invite copy — overlaps share copy */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+              justifyContent: 'center', padding: '0 30px',
+              opacity: isInvite ? 1 : 0,
+              transition: 'opacity 0.35s ease',
+              pointerEvents: 'none',
+            }}>
+              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                Use this app together
+              </h1>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                This is a short two line explainer that's specific to the app type
+              </p>
+            </div>
           </div>
         </div>
 
@@ -513,11 +528,12 @@ function ShareScreen({ mode }) {
         <div style={{
           flexGrow: isInvite ? 1 : 0,
           flexShrink: isInvite ? 1 : 0,
+          maxHeight: isInvite ? 9999 : 0,
           opacity: isInvite ? 1 : 0,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          transition: 'flex-grow 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease',
+          transition: 'flex-grow 0.4s cubic-bezier(0.32, 0.72, 0, 1), max-height 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease',
           pointerEvents: isInvite ? 'auto' : 'none',
         }}>
           {/* Search */}
