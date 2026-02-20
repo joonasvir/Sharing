@@ -403,10 +403,10 @@ function ShareScreen({ mode }) {
                   width: '100%', fontFamily: 'inherit', textAlign: 'left',
                 }}
               >
-                <GlobeSimple size={28} color="#0a0a0a" />
+                <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#b0b0b0'} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: '#0a0a0a' }}>Public</span>
-                  <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: '#737373' }}>
+                  <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#b0b0b0' }}>Public</span>
+                  <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#c5c5c5' }}>
                     Visible on Explore, anyone can search for and view
                   </span>
                 </div>
@@ -426,15 +426,15 @@ function ShareScreen({ mode }) {
                   width: '100%', fontFamily: 'inherit', textAlign: 'left',
                 }}
               >
-                <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#737373'} />
+                <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0'} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                   <span style={{
                     fontSize: 15, fontWeight: 500, lineHeight: '18px',
-                    color: visibility === 'unlisted' ? '#0a0a0a' : '#737373',
+                    color: visibility === 'unlisted' ? '#0a0a0a' : '#b0b0b0',
                   }}>Unlisted</span>
                   <span style={{
                     fontSize: 13, fontWeight: 400, lineHeight: '16px',
-                    color: visibility === 'unlisted' ? '#525252' : '#a3a3a3',
+                    color: visibility === 'unlisted' ? '#525252' : '#c5c5c5',
                   }}>
                     Not visible on Explore or search, but anyone with the link can view
                   </span>
