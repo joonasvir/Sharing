@@ -337,7 +337,7 @@ function ShareScreen({ mode }) {
           gap: 12,
           textAlign: 'center',
           minHeight: 0,
-          transition: 'flex-grow 0.45s cubic-bezier(0.32, 0.72, 0, 1), padding 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
           {/* App icon with status badge */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -349,14 +349,14 @@ function ShareScreen({ mode }) {
                 height: isInvite ? 90 : 120,
                 borderRadius: '50%',
                 objectFit: 'cover',
-                transition: 'all 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
+                transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
               }}
             />
             {/* Status badge — glassy circle */}
             <div style={{
               position: 'absolute',
-              top: isInvite ? -4 : -2,
-              right: isInvite ? -8 : -6,
+              top: -2,
+              right: -6,
               width: 36, height: 36,
               borderRadius: '50%',
               background: 'rgba(255,255,255,0.85)',
@@ -365,7 +365,7 @@ function ShareScreen({ mode }) {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: isInvite ? 0 : 1,
-              transition: 'all 0.35s ease',
+              transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
             }}>
               {published && visibility === 'public'
                 ? <GlobeSimple size={18} color="#0a0a0a" />
@@ -380,7 +380,7 @@ function ShareScreen({ mode }) {
               transform: 'translateX(-50%)',
               display: 'flex',
               opacity: isInvite ? 1 : 0,
-              transition: `opacity 0.3s ease ${isInvite ? '0.15s' : '0s'}`,
+              transition: `opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${isInvite ? '0.1s' : '0s'}`,
               pointerEvents: 'none',
             }}>
               {[200, 100, 320].map((hue, j) => (
@@ -408,7 +408,7 @@ function ShareScreen({ mode }) {
             <div style={{
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               opacity: isShare ? 1 : 0,
-              transition: 'opacity 0.35s ease',
+              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
                 {published ? 'Your mini-app is published!' : 'Your mini-app is private. Publish it to share'}
@@ -425,7 +425,7 @@ function ShareScreen({ mode }) {
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               justifyContent: 'center', padding: '0 30px',
               opacity: isInvite ? 1 : 0,
-              transition: 'opacity 0.35s ease',
+              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
               pointerEvents: 'none',
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
@@ -447,7 +447,7 @@ function ShareScreen({ mode }) {
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          transition: 'flex-grow 0.4s cubic-bezier(0.32, 0.72, 0, 1), max-height 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.35s ease',
+          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           pointerEvents: isInvite ? 'auto' : 'none',
         }}>
           {/* Search */}
@@ -501,7 +501,7 @@ function ShareScreen({ mode }) {
           maxHeight: isInvite ? 100 : 0,
           opacity: isInvite ? 1 : 0,
           overflow: 'hidden',
-          transition: 'all 0.35s ease',
+          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           pointerEvents: isInvite ? 'auto' : 'none',
           padding: isInvite ? '0 20px 28px' : '0 20px 0',
         }}>
@@ -522,7 +522,7 @@ function ShareScreen({ mode }) {
           maxHeight: isShare ? 400 : 0,
           opacity: isShare ? 1 : 0,
           overflow: 'hidden',
-          transition: 'all 0.35s ease',
+          transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
           pointerEvents: isShare ? 'auto' : 'none',
         }}>
           {clarity ? (
