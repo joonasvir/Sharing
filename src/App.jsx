@@ -379,7 +379,7 @@ function ShareScreen({ mode }) {
             <h1 style={{ fontSize: 24, fontWeight: published ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
               {published
                 ? 'Your mini-app is published!'
-                : 'Your mini-app isn\u2019t published yet. Publish to share it'}
+                : 'Publish your app to share it'}
             </h1>
             <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
               {published
