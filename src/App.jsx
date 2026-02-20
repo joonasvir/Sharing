@@ -76,14 +76,15 @@ function SegmentedControl({ label, options, value, onChange }) {
         fontSize: 11,
         fontWeight: 500,
         textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        color: '#888',
+        letterSpacing: '0.06em',
+        color: 'rgba(255,255,255,0.35)',
       }}>{label}</span>
       <div style={{
         display: 'flex',
-        background: '#1a1a1a',
-        borderRadius: 10,
+        background: 'rgba(255,255,255,0.06)',
+        borderRadius: 12,
         padding: 3,
+        border: '1px solid rgba(255,255,255,0.06)',
       }}>
         {options.map(opt => (
           <button
@@ -91,16 +92,17 @@ function SegmentedControl({ label, options, value, onChange }) {
             onClick={() => onChange(opt.value)}
             style={{
               flex: 1,
-              padding: '8px 14px',
-              borderRadius: 8,
+              padding: '10px 14px',
+              borderRadius: 10,
               border: 'none',
               cursor: 'pointer',
               fontSize: 13,
               fontWeight: 500,
               fontFamily: 'inherit',
-              color: value === opt.value ? '#fff' : '#666',
-              background: value === opt.value ? '#333' : 'transparent',
-              transition: 'all 0.15s ease',
+              color: value === opt.value ? '#fff' : 'rgba(255,255,255,0.3)',
+              background: value === opt.value ? 'rgba(255,255,255,0.1)' : 'transparent',
+              boxShadow: value === opt.value ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+              transition: 'all 0.2s ease',
             }}
           >
             {opt.label}
@@ -114,12 +116,19 @@ function SegmentedControl({ label, options, value, onChange }) {
 function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
   return (
     <div style={{
-      width: 200,
+      width: 220,
       display: 'flex',
       flexDirection: 'column',
-      gap: 24,
-      paddingRight: 48,
+      gap: 20,
+      padding: '24px 20px',
+      marginRight: 48,
       flexShrink: 0,
+      background: 'rgba(255,255,255,0.04)',
+      backdropFilter: 'blur(40px)',
+      WebkitBackdropFilter: 'blur(40px)',
+      borderRadius: 28,
+      border: '1px solid rgba(255,255,255,0.07)',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)',
     }}>
       <SegmentedControl
         label="Screen"
@@ -130,6 +139,7 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange }) {
         value={screen}
         onChange={onScreenChange}
       />
+      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 -4px' }} />
       <SegmentedControl
         label="Layout"
         options={[
@@ -297,6 +307,7 @@ function ShareScreen({ mode }) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
   const [published, setPublished] = useState(false)
+  const [publishing, setPublishing] = useState(false)
   const clarity = mode === 'clarity'
 
   const isShare = activeTab === 'share'
@@ -304,7 +315,11 @@ function ShareScreen({ mode }) {
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
 
   const handlePublish = () => {
-    setPublished(true)
+    setPublishing(true)
+    setTimeout(() => {
+      setPublishing(false)
+      setPublished(true)
+    }, 1400)
   }
 
   const handleUnpublish = () => {
@@ -347,20 +362,22 @@ function ShareScreen({ mode }) {
           minHeight: 0,
           transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
-          {/* App icon row — main orb + side orbs fan out on publish */}
+          {/* App icon row — main orb pushes up into row on publish */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: isShare && published ? 10 : 0,
-            transition: 'gap 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+            gap: isShare && published && visibility === 'public' ? 10 : 0,
+            transform: `translateY(${isShare && published && visibility === 'public' ? -10 : 0}px)`,
+            transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
           }}>
             {APP_ORBS.map((orb, i) => {
               const isMain = orb.isMain
               const mainIdx = 2
               const dist = Math.abs(i - mainIdx)
-              const delay = isShare && published ? 0.06 + dist * 0.05 : 0
-              const showSide = isShare && published
+              const offsetDir = i < mainIdx ? -1 : 1
+              const delay = isShare && published ? 0.1 + dist * 0.06 : 0
+              const showSide = isShare && published && visibility === 'public'
               const size = isMain
-                ? (isInvite ? 90 : (published ? 65 : 120))
+                ? (isInvite ? 90 : (publishing ? 110 : (published && visibility === 'public' ? 65 : 120)))
                 : (showSide ? 65 : 0)
 
               if (isMain) {
@@ -372,7 +389,8 @@ function ShareScreen({ mode }) {
                       style={{
                         width: size, height: size,
                         borderRadius: '50%', objectFit: 'cover',
-                        transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1)`,
+                        opacity: publishing ? 0.7 : 1,
+                        transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                       }}
                     />
                     {/* Status badge */}
@@ -383,7 +401,7 @@ function ShareScreen({ mode }) {
                       backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: isInvite ? 0 : 1,
+                      opacity: isInvite || publishing ? 0 : 1,
                       transform: `scale(${published && isShare ? 0.8 : 1})`,
                       transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
                     }}>
@@ -424,8 +442,8 @@ function ShareScreen({ mode }) {
                     borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
                     filter: `hue-rotate(${orb.hue}deg)`,
                     opacity: showSide ? 0.85 : 0,
-                    transform: `scale(${showSide ? 1 : 0.5})`,
-                    transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+                    transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
+                    transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                   }}
                 />
               )
@@ -440,7 +458,7 @@ function ShareScreen({ mode }) {
             {/* Share unpublished copy — takes layout space */}
             <div style={{
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              opacity: isShare && !published ? 1 : 0,
+              opacity: isShare && !published && !publishing ? 1 : 0,
               transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
             }}>
               <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
@@ -450,12 +468,28 @@ function ShareScreen({ mode }) {
                 None of your data is shared upon publish
               </p>
             </div>
+            {/* Publishing copy — overlaps */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+              justifyContent: 'center', padding: '0 30px',
+              opacity: isShare && publishing ? 1 : 0,
+              transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+              pointerEvents: 'none',
+            }}>
+              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                Publishing...
+              </h1>
+              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                Your mini-app is being shared with the world
+              </p>
+            </div>
             {/* Share published copy — overlaps */}
             <div style={{
               position: 'absolute', inset: 0,
               display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
               justifyContent: 'center', padding: '0 30px',
-              opacity: isShare && published ? 1 : 0,
+              opacity: isShare && published && !publishing ? 1 : 0,
               transition: 'opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
               pointerEvents: 'none',
             }}>
@@ -660,18 +694,23 @@ function ShareScreen({ mode }) {
 
             {/* Action button */}
             <button
-              onClick={() => { published ? handleShare() : handlePublish() }}
+              onClick={() => { !publishing && (published ? handleShare() : handlePublish()) }}
               style={{
                 width: '100%', background: '#171717', color: '#fafafa',
                 border: 'none', borderRadius: 999, padding: '18px 30px',
-                fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                fontSize: 15, fontWeight: 500, lineHeight: '20px',
+                cursor: publishing ? 'default' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
                 boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+                opacity: publishing ? 0.5 : 1,
+                transition: 'opacity 0.3s ease',
               }}
             >
-              {published
-                ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+              {publishing
+                ? 'Publishing...'
+                : published
+                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
             </button>
           </div>
 
