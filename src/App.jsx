@@ -29,9 +29,10 @@ const MOCK_USERS = [
   { name: 'AlexPatel', handle: 'AlexP_2024', hue: 320 },
 ]
 
-function AppCarousel({ published, isInvite }) {
+function AppCarousel({ published, isInvite, visibility }) {
   const isShare = !isInvite
   const mainIndex = CAROUSEL_APPS.findIndex(a => a.isMain)
+  const showRow = isShare && published && visibility === 'public'
 
   return (
     <div style={{
@@ -43,12 +44,12 @@ function AppCarousel({ published, isInvite }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: isShare && published ? 12 : 0,
+        gap: showRow ? 12 : 0,
         transition: 'gap 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
       }}>
         {CAROUSEL_APPS.map((app, i) => {
           const isMain = app.isMain
-          const delay = isShare && published ? 0.08 + Math.abs(i - mainIndex) * 0.06 : 0
+          const delay = showRow ? 0.08 + Math.abs(i - mainIndex) * 0.06 : 0
 
           let cardWidth, orbSize, cardPadding, cardBg, cardBorder, showCard, opacity, scale
 
@@ -62,7 +63,7 @@ function AppCarousel({ published, isInvite }) {
               cardBg = 'transparent'; cardBorder = '1px solid transparent'
               showCard = false; opacity = 0; scale = 0.5
             }
-          } else if (!published) {
+          } else if (!published || visibility === 'unlisted') {
             if (isMain) {
               cardWidth = 175; orbSize = 115; cardPadding = '20px'
               cardBg = 'rgba(245,245,245,0.6)'; cardBorder = '1px solid rgba(0,0,0,0.05)'
@@ -490,7 +491,7 @@ function ShareScreen({ mode }) {
           transition: 'flex-grow 0.45s cubic-bezier(0.32, 0.72, 0, 1), padding 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
           {/* Card carousel — shared element transition for main orb */}
-          <AppCarousel published={published} isInvite={isInvite} />
+          <AppCarousel published={published} isInvite={isInvite} visibility={visibility} />
 
           {/* Copy — share and invite crossfade in same space */}
           <div style={{
