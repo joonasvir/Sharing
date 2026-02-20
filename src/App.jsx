@@ -417,8 +417,8 @@ function ShareScreen({ mode, screen }) {
                 {/* Status badge */}
                 <div style={{
                   position: 'absolute', top: -2, right: -6,
-                  width: forPage === 'share' && published ? 28 : 36,
-                  height: forPage === 'share' && published ? 28 : 36,
+                  width: forPage === 'share' && published && visibility === 'public' ? 28 : 36,
+                  height: forPage === 'share' && published && visibility === 'public' ? 28 : 36,
                   borderRadius: '50%',
                   background: 'rgba(255,255,255,0.85)',
                   backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
@@ -428,10 +428,10 @@ function ShareScreen({ mode, screen }) {
                   transition: `all ${ease}`,
                 }}>
                   {published && visibility === 'public'
-                    ? <GlobeSimple size={forPage === 'share' && published ? 14 : 18} color="#0a0a0a" />
+                    ? <GlobeSimple size={forPage === 'share' && published && visibility === 'public' ? 14 : 18} color="#0a0a0a" />
                     : published && visibility === 'unlisted'
-                      ? <LinkSimple size={forPage === 'share' && published ? 14 : 18} color="#0a0a0a" />
-                      : <LockSimple size={forPage === 'share' && published ? 14 : 18} color="#0a0a0a" />}
+                      ? <LinkSimple size={18} color="#0a0a0a" />
+                      : <LockSimple size={18} color="#0a0a0a" />}
                 </div>
                 {/* Invite user badges */}
                 <div style={{
