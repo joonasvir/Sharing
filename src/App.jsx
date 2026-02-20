@@ -1,174 +1,6 @@
 import { useState } from 'react'
 
-const styles = {
-  wrapper: {
-    width: '100%',
-    maxWidth: 402,
-    height: '100dvh',
-    maxHeight: 872,
-    position: 'relative',
-    background: '#000',
-    overflow: 'hidden',
-  },
-  sheet: {
-    position: 'absolute',
-    inset: 0,
-    top: 51,
-    background: '#fff',
-    borderRadius: '38px 38px 46px 46px',
-    boxShadow: '0 15px 75px rgba(0,0,0,0.18)',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-  },
-  tabs: {
-    margin: '20px 27px 0',
-    background: 'rgba(246,246,246,0.5)',
-    borderRadius: 155,
-    display: 'flex',
-    padding: 4,
-    position: 'relative',
-    flexShrink: 0,
-  },
-  tabInner: {
-    boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.07)',
-    borderRadius: 'inherit',
-    position: 'absolute',
-    inset: 0,
-    pointerEvents: 'none',
-  },
-  tab: (active) => ({
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    padding: '16px 0',
-    borderRadius: 155,
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: 17.7,
-    fontWeight: 500,
-    color: '#191919',
-    background: active ? '#fff' : 'transparent',
-    boxShadow: active ? '0 4px 12px rgba(0,0,0,0.12)' : 'none',
-    opacity: active ? 1 : 0.5,
-    transition: 'all 0.2s ease',
-    position: 'relative',
-    zIndex: 1,
-    fontFamily: 'inherit',
-  }),
-  content: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '0 40px',
-    textAlign: 'center',
-    gap: 25,
-  },
-  orb: {
-    width: 120,
-    height: 120,
-    borderRadius: '50%',
-    objectFit: 'cover',
-  },
-  textBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12,
-    alignItems: 'center',
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 500,
-    lineHeight: '28px',
-    color: '#0a0a0a',
-  },
-  body: {
-    fontSize: 16,
-    fontWeight: 400,
-    lineHeight: '18px',
-    color: '#737373',
-    maxWidth: 306,
-  },
-  bottomSection: {
-    flexShrink: 0,
-    margin: '0 20px 34px',
-    background: '#f5f5f5',
-    borderRadius: 32,
-    padding: 20,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-  },
-  visibilityRow: {
-    background: '#fff',
-    borderRadius: 24,
-    padding: '20px 20px 20px 12px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    cursor: 'pointer',
-    border: 'none',
-    width: '100%',
-    fontFamily: 'inherit',
-  },
-  visibilityIcon: {
-    flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 5,
-  },
-  visibilityText: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2,
-    textAlign: 'left',
-  },
-  visibilityLabel: {
-    fontSize: 12,
-    lineHeight: '14px',
-    color: '#737373',
-    fontWeight: 400,
-  },
-  visibilityValue: {
-    fontSize: 16,
-    lineHeight: '18px',
-    color: '#0a0a0a',
-    fontWeight: 500,
-  },
-  chevron: {
-    width: 24,
-    height: 24,
-    flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#0a0a0a',
-  },
-  publishBtn: {
-    width: '100%',
-    background: '#171717',
-    color: '#fafafa',
-    border: 'none',
-    borderRadius: 999,
-    padding: '18px 30px',
-    fontSize: 15,
-    fontWeight: 500,
-    lineHeight: '20px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 7.5,
-    boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)',
-    fontFamily: 'inherit',
-  },
-}
+/* ─── Icons ─── */
 
 function GlobeIcon({ size = 32, color = '#0a0a0a' }) {
   return (
@@ -219,59 +51,341 @@ function CloudUploadIcon({ size = 24, color = '#fafafa' }) {
   )
 }
 
-export default function App() {
+/* ─── iPhone Frame ─── */
+
+function IPhoneFrame({ children }) {
+  return (
+    <div style={{
+      width: 402,
+      height: 872,
+      borderRadius: 54,
+      border: '8px solid #1a1a1a',
+      background: '#000',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: '0 50px 100px rgba(0,0,0,0.4), 0 0 0 2px #333, inset 0 0 0 2px #333',
+      flexShrink: 0,
+    }}>
+      {/* Dynamic Island */}
+      <div style={{
+        position: 'absolute',
+        top: 10,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 126,
+        height: 36,
+        borderRadius: 20,
+        background: '#000',
+        zIndex: 10,
+      }} />
+      {/* Screen content */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        overflow: 'hidden',
+        borderRadius: 46,
+      }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Controls Sidebar ─── */
+
+function SegmentedControl({ label, options, value, onChange }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <span style={{
+        fontSize: 11,
+        fontWeight: 500,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        color: '#888',
+      }}>{label}</span>
+      <div style={{
+        display: 'flex',
+        background: '#1a1a1a',
+        borderRadius: 10,
+        padding: 3,
+      }}>
+        {options.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            style={{
+              flex: 1,
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: 500,
+              fontFamily: 'inherit',
+              color: value === opt.value ? '#fff' : '#666',
+              background: value === opt.value ? '#333' : 'transparent',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Sidebar({ mode, onModeChange }) {
+  return (
+    <div style={{
+      width: 200,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 24,
+      paddingRight: 48,
+      flexShrink: 0,
+    }}>
+      <SegmentedControl
+        label="Layout"
+        options={[
+          { label: 'Normal', value: 'normal' },
+          { label: 'Minimal', value: 'minimal' },
+        ]}
+        value={mode}
+        onChange={onModeChange}
+      />
+    </div>
+  )
+}
+
+/* ─── Share Screen ─── */
+
+function ShareScreen({ mode }) {
   const [activeTab, setActiveTab] = useState('share')
+  const minimal = mode === 'minimal'
 
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.sheet}>
+    <div style={{
+      width: '100%',
+      height: '100%',
+      position: 'relative',
+      background: '#000',
+    }}>
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        top: 51,
+        background: '#fff',
+        borderRadius: '38px 38px 46px 46px',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
         {/* Tabs */}
-        <div style={styles.tabs}>
-          <button style={styles.tab(activeTab === 'share')} onClick={() => setActiveTab('share')}>
-            <ShareIcon size={22} />
-            Share
-          </button>
-          <button style={styles.tab(activeTab === 'invite')} onClick={() => setActiveTab('invite')}>
-            <InviteIcon size={22} />
-            Invite
-          </button>
-          <div style={styles.tabInner} />
-        </div>
+        {!minimal && (
+          <div style={{
+            margin: '20px 27px 0',
+            background: 'rgba(246,246,246,0.5)',
+            borderRadius: 155,
+            display: 'flex',
+            padding: 4,
+            position: 'relative',
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setActiveTab('share')}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                padding: '16px 0',
+                borderRadius: 155,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 17.7,
+                fontWeight: 500,
+                color: '#191919',
+                background: activeTab === 'share' ? '#fff' : 'transparent',
+                boxShadow: activeTab === 'share' ? '0 4px 12px rgba(0,0,0,0.12)' : 'none',
+                opacity: activeTab === 'share' ? 1 : 0.5,
+                transition: 'all 0.2s ease',
+                position: 'relative',
+                zIndex: 1,
+                fontFamily: 'inherit',
+              }}
+            >
+              <ShareIcon size={22} />
+              Share
+            </button>
+            <button
+              onClick={() => setActiveTab('invite')}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                padding: '16px 0',
+                borderRadius: 155,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 17.7,
+                fontWeight: 500,
+                color: '#191919',
+                background: activeTab === 'invite' ? '#fff' : 'transparent',
+                boxShadow: activeTab === 'invite' ? '0 4px 12px rgba(0,0,0,0.12)' : 'none',
+                opacity: activeTab === 'invite' ? 1 : 0.5,
+                transition: 'all 0.2s ease',
+                position: 'relative',
+                zIndex: 1,
+                fontFamily: 'inherit',
+              }}
+            >
+              <InviteIcon size={22} />
+              Invite
+            </button>
+            <div style={{
+              boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.07)',
+              borderRadius: 'inherit',
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+            }} />
+          </div>
+        )}
 
         {/* Center content */}
-        <div style={styles.content}>
-          <img src="/orb.png" alt="" style={styles.orb} />
-          <div style={styles.textBlock}>
-            <h1 style={styles.heading}>
-              Your mini-app isn&rsquo;t published yet. Publish to share it.
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: minimal ? '0 40px 0' : '0 40px',
+          textAlign: 'center',
+          gap: 25,
+        }}>
+          <img src="/orb.png" alt="" style={{
+            width: minimal ? 80 : 120,
+            height: minimal ? 80 : 120,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            transition: 'all 0.3s ease',
+          }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
+            <h1 style={{
+              fontSize: minimal ? 20 : 24,
+              fontWeight: 500,
+              lineHeight: minimal ? '24px' : '28px',
+              color: '#0a0a0a',
+              transition: 'all 0.3s ease',
+            }}>
+              {minimal
+                ? 'Publish to share it.'
+                : 'Your mini-app isn\u2019t published yet. Publish to share it.'}
             </h1>
-            <p style={styles.body}>
-              None of your app data is shared upon publishing. Other users will see an empty version of your app.
-            </p>
+            {!minimal && (
+              <p style={{
+                fontSize: 16,
+                fontWeight: 400,
+                lineHeight: '18px',
+                color: '#737373',
+                maxWidth: 306,
+              }}>
+                None of your app data is shared upon publishing. Other users will see an empty version of your app.
+              </p>
+            )}
           </div>
         </div>
 
         {/* Bottom section */}
-        <div style={styles.bottomSection}>
-          <button style={styles.visibilityRow}>
-            <div style={styles.visibilityIcon}>
-              <GlobeIcon size={32} />
-            </div>
-            <div style={styles.visibilityText}>
-              <span style={styles.visibilityLabel}>Visibility</span>
-              <span style={styles.visibilityValue}>Public</span>
-            </div>
-            <div style={styles.chevron}>
-              <ChevronRight />
-            </div>
-          </button>
+        <div style={{
+          flexShrink: 0,
+          margin: minimal ? '0 20px 34px' : '0 20px 34px',
+          background: minimal ? 'transparent' : '#f5f5f5',
+          borderRadius: 32,
+          padding: minimal ? '0' : 20,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+          transition: 'all 0.3s ease',
+        }}>
+          {!minimal && (
+            <button style={{
+              background: '#fff',
+              borderRadius: 24,
+              padding: '20px 20px 20px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              cursor: 'pointer',
+              border: 'none',
+              width: '100%',
+              fontFamily: 'inherit',
+            }}>
+              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5 }}>
+                <GlobeIcon size={32} />
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
+                <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
+                <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>Public</span>
+              </div>
+              <div style={{ width: 24, height: 24, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ChevronRight />
+              </div>
+            </button>
+          )}
 
-          <button style={styles.publishBtn}>
+          <button style={{
+            width: '100%',
+            background: '#171717',
+            color: '#fafafa',
+            border: 'none',
+            borderRadius: 999,
+            padding: '18px 30px',
+            fontSize: 15,
+            fontWeight: 500,
+            lineHeight: '20px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 7.5,
+            boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)',
+            fontFamily: 'inherit',
+          }}>
             <CloudUploadIcon />
             Publish
           </button>
         </div>
       </div>
+    </div>
+  )
+}
+
+/* ─── App ─── */
+
+export default function App() {
+  const [mode, setMode] = useState('normal')
+
+  return (
+    <div style={{
+      width: '100vw',
+      height: '100dvh',
+      background: '#0a0a0a',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 0,
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
+      color: '#fff',
+    }}>
+      <Sidebar mode={mode} onModeChange={setMode} />
+      <IPhoneFrame>
+        <ShareScreen mode={mode} />
+      </IPhoneFrame>
     </div>
   )
 }
