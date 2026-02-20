@@ -347,7 +347,7 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published }) {
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: '#737373' }}>Private</span>
                 <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: '#737373' }}>
-                  Only you
+                  Only visible to you. Disables the share link.
                 </span>
               </div>
               <div style={{ flexShrink: 0 }}>
