@@ -21,53 +21,41 @@ const CAROUSEL_APPS = [
   { name: 'Run Club', hue: 280 },
 ]
 
-function AppCarousel({ phase }) {
-  const isCard = phase === 'card'
-  const isRow = phase === 'row' || phase === 'done'
-  const showCards = isCard || isRow
+function AppCarousel({ published }) {
+  const mainIndex = CAROUSEL_APPS.findIndex(a => a.isMain)
 
   return (
     <div style={{
       width: '100%',
-      overflow: 'hidden',
       display: 'flex',
       justifyContent: 'center',
-      padding: '8px 0',
+      padding: '8px 16px',
     }}>
       <div style={{
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        gap: isRow ? 12 : (isCard ? 8 : 0),
-        transition: 'gap 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+        gap: published ? 10 : 0,
+        transition: `gap 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${published ? '0.15s' : '0s'}`,
       }}>
-        {CAROUSEL_APPS.map((app) => {
+        {CAROUSEL_APPS.map((app, i) => {
           const isMain = app.isMain
+          const delay = published ? 0.12 + Math.abs(i - mainIndex) * 0.07 : 0
 
-          let width, padding, bg, shadow, iconSize, labelOpacity, scale, opacity, zIndex
+          let width, padding, bg, shadow, iconSize, labelOpacity, scale, opacity
 
-          if (!showCards) {
+          if (!published) {
             if (isMain) {
               width = 120; padding = '0'; bg = 'transparent'; shadow = 'none'
-              iconSize = 120; labelOpacity = 0; scale = 1; opacity = 1; zIndex = 1
+              iconSize = 120; labelOpacity = 0; scale = 1; opacity = 1
             } else {
               width = 0; padding = '0'; bg = 'transparent'; shadow = 'none'
-              iconSize = 0; labelOpacity = 0; scale = 0; opacity = 0; zIndex = 1
-            }
-          } else if (isCard) {
-            if (isMain) {
-              width = 155; padding = '20px 16px'; bg = '#fff'
-              shadow = '0 4px 24px rgba(0,0,0,0.10)'; iconSize = 100
-              labelOpacity = 1; scale = 1.06; opacity = 1; zIndex = 10
-            } else {
-              width = 110; padding = '16px 12px'; bg = '#fff'
-              shadow = '0 2px 12px rgba(0,0,0,0.06)'; iconSize = 70
-              labelOpacity = 1; scale = 0.92; opacity = 0.9; zIndex = 5
+              iconSize = 0; labelOpacity = 0; scale = 0.5; opacity = 0
             }
           } else {
-            width = 110; padding = '14px 10px'; bg = '#fff'
-            shadow = '0 2px 8px rgba(0,0,0,0.06)'; iconSize = 80
-            labelOpacity = 1; scale = 1; opacity = 1; zIndex = 1
+            width = 80; padding = '12px 8px'; bg = '#fff'
+            shadow = '0 2px 8px rgba(0,0,0,0.06)'; iconSize = 56
+            labelOpacity = 1; scale = 1; opacity = 1
           }
 
           return (
@@ -78,17 +66,16 @@ function AppCarousel({ phase }) {
                 flexShrink: 0,
                 padding,
                 background: bg,
-                borderRadius: 20,
+                borderRadius: 18,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: showCards ? 8 : 0,
+                gap: published ? 6 : 0,
                 boxShadow: shadow,
                 transform: `scale(${scale})`,
                 opacity,
-                zIndex,
                 overflow: 'hidden',
-                transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+                transition: `all 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
               }}
             >
               <img
@@ -101,18 +88,18 @@ function AppCarousel({ phase }) {
                   objectFit: 'cover',
                   filter: app.hue !== 0 ? `hue-rotate(${app.hue}deg)` : 'none',
                   flexShrink: 0,
-                  transition: 'all 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
+                  transition: `all 0.7s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
                 }}
               />
               <span style={{
-                fontSize: isCard && isMain ? 13 : 11,
+                fontSize: 11,
                 fontWeight: 500,
                 color: '#0a0a0a',
                 textAlign: 'center',
                 whiteSpace: 'nowrap',
                 opacity: labelOpacity,
-                maxHeight: showCards ? 20 : 0,
-                transition: 'all 0.4s ease',
+                maxHeight: published ? 20 : 0,
+                transition: `all 0.5s ease ${published ? delay + 0.15 : 0}s`,
                 overflow: 'hidden',
               }}>
                 {app.name}
@@ -381,26 +368,20 @@ function ShareScreen({ mode }) {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [visibility, setVisibility] = useState('public')
   const [published, setPublished] = useState(false)
-  const [phase, setPhase] = useState(null) // null | 'fading' | 'card' | 'row' | 'done'
+  const [settled, setSettled] = useState(false)
   const clarity = mode === 'clarity'
 
   const visibilityLabel = visibility === 'public' ? 'Public' : 'Unlisted'
-  const showPublished = phase === 'done'
-  const contentVisible = phase === null || phase === 'done'
+  const contentVisible = !published || settled
 
   const handlePublish = () => {
-    setPhase('fading')
-    setTimeout(() => {
-      setPublished(true)
-      setPhase('card')
-    }, 400)
-    setTimeout(() => setPhase('row'), 1100)
-    setTimeout(() => setPhase('done'), 1700)
+    setPublished(true)
+    setTimeout(() => setSettled(true), 1200)
   }
 
   const handleUnpublish = () => {
+    setSettled(false)
     setPublished(false)
-    setPhase(null)
   }
 
   const handleShare = async () => {
@@ -428,22 +409,22 @@ function ShareScreen({ mode }) {
         {/* Center content */}
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', padding: clarity ? '0 30px' : '0 40px',
-          textAlign: 'center', gap: clarity ? 16 : 25,
+          justifyContent: 'center', textAlign: 'center', gap: clarity ? 16 : 25,
         }}>
-          <AppCarousel phase={phase} />
+          <AppCarousel published={published} />
           <div style={{
             display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+            padding: clarity ? '0 30px' : '0 40px',
             opacity: contentVisible ? 1 : 0,
             transition: 'opacity 0.35s ease',
           }}>
-            <h1 style={{ fontSize: 24, fontWeight: showPublished ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
-              {showPublished
+            <h1 style={{ fontSize: 24, fontWeight: settled ? 700 : 500, lineHeight: '28px', color: '#0a0a0a' }}>
+              {settled
                 ? 'Your mini-app is published!'
                 : 'Publish your app to share it'}
             </h1>
             <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-              {showPublished
+              {settled
                 ? 'If you want to use it with your friends only, use the Invite tab.'
                 : 'None of your app data is shared upon publishing. Other users will see an empty version of your app.'}
             </p>
@@ -452,6 +433,7 @@ function ShareScreen({ mode }) {
 
         {/* Bottom section — fades during publish transition */}
         <div style={{
+          flexShrink: 0,
           opacity: contentVisible ? 1 : 0,
           transition: 'opacity 0.35s ease',
           pointerEvents: contentVisible ? 'auto' : 'none',
@@ -459,7 +441,7 @@ function ShareScreen({ mode }) {
           {clarity ? (
             /* ─── Clarity: options + button inside gray area ─── */
             <div style={{
-              flexShrink: 0, margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
+              margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
               padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
             }}>
               {published ? (
@@ -601,8 +583,9 @@ function ShareScreen({ mode }) {
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                gap: 8, padding: '20px 0 34px', fontFamily: 'inherit',
+                gap: 8, padding: '16px 0 28px', fontFamily: 'inherit',
                 fontSize: 15, fontWeight: 500, color: '#ef4444',
+                flexShrink: 0,
               }}
             >
               <LockSimple size={20} color="#ef4444" />
@@ -610,7 +593,7 @@ function ShareScreen({ mode }) {
             </button>
           )}
 
-          {!published && <div style={{ height: 34, flexShrink: 0 }} />}
+          {!published && <div style={{ height: 28, flexShrink: 0 }} />}
         </div>
       </div>
 
