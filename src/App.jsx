@@ -17,9 +17,9 @@ import {
 /* ─── App Card Carousel (publish animation) ─── */
 
 const CAROUSEL_APPS = [
-  { title: 'Meditation', subtitle: 'moments', hue: 0 },
-  { title: 'Meditation', subtitle: 'moments', hue: 0, isMain: true },
-  { title: 'Meditation', subtitle: 'moments', hue: 0 },
+  { hue: 0 },
+  { hue: 0, isMain: true },
+  { hue: 0 },
 ]
 
 const MOCK_USERS = [
@@ -106,9 +106,7 @@ function AppCarousel({ published, isInvite }) {
                 opacity: showCard ? 0.4 : 0,
                 transition: `opacity 0.4s ease ${delay}s`,
               }}>
-                {isMain && published
-                  ? <GlobeSimple size={18} color="#0a0a0a" />
-                  : <LockSimple size={18} color="#0a0a0a" />}
+                <LockSimple size={18} color="#0a0a0a" />
               </div>
 
               {/* Orb — shared element for main card */}
@@ -154,21 +152,16 @@ function AppCarousel({ published, isInvite }) {
                 )}
               </div>
 
-              {/* App name */}
+              {/* Skeleton text */}
               <div style={{
-                textAlign: 'center',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
                 maxHeight: showCard ? 40 : 0,
                 opacity: showCard ? 1 : 0,
                 overflow: 'hidden',
                 transition: `all 0.4s ease ${delay}s`,
               }}>
-                <span style={{ fontSize: 15, fontWeight: 500, color: '#C47020' }}>
-                  {app.title}
-                </span>
-                <br />
-                <span style={{ fontSize: 15, fontWeight: 500, color: '#0a0a0a' }}>
-                  {app.subtitle}
-                </span>
+                <div style={{ width: 60, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.08)' }} />
+                <div style={{ width: 40, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.05)' }} />
               </div>
             </div>
           )
