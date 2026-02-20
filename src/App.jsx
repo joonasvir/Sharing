@@ -391,391 +391,371 @@ function ShareScreen({ mode }) {
       >
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Hero area — always flex-grows, invite sections push it smaller */}
+        {/* Top spacer — centers orb on share tab, collapses on invite */}
         <div style={{
-          flexGrow: 1,
-          flexShrink: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingTop: isInvite ? 20 : 0,
-          gap: 12,
-          textAlign: 'center',
-          minHeight: 0,
-          transition: 'padding 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}>
-          {/* App icon row — main orb pushes up into row on publish */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: isShare && published && visibility === 'public' ? 10 : 0,
-            transform: `translateY(${isShare && published && visibility === 'public' ? -10 : 0}px)`,
-            transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-          }}>
-            {APP_ORBS.map((orb, i) => {
-              const isMain = orb.isMain
-              const mainIdx = 2
-              const dist = Math.abs(i - mainIdx)
-              const offsetDir = i < mainIdx ? -1 : 1
-              const showSide = isShare && published && visibility === 'public'
-              const delay = showSide ? 0.1 + dist * 0.06 : 0
-              const size = isMain
-                ? (isInvite ? 90 : (published && visibility === 'public' ? 65 : 120))
-                : (showSide ? 65 : 0)
+          flexGrow: isInvite ? 0 : 1,
+          flexBasis: isInvite ? 16 : 0,
+          flexShrink: 0,
+          transition: `all ${ease}`,
+        }} />
 
-              if (isMain) {
-                return (
+        {/* App icon row — shared element, stays in place */}
+        <div style={{
+          flexShrink: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: isShare && published && visibility === 'public' ? 10 : 0,
+          transform: `translateY(${isShare && published && visibility === 'public' ? -10 : 0}px)`,
+          transition: `all ${ease}`,
+        }}>
+          {APP_ORBS.map((orb, i) => {
+            const isMain = orb.isMain
+            const mainIdx = 2
+            const dist = Math.abs(i - mainIdx)
+            const offsetDir = i < mainIdx ? -1 : 1
+            const showSide = isShare && published && visibility === 'public'
+            const delay = showSide ? 0.1 + dist * 0.06 : 0
+            const size = isMain
+              ? (isInvite ? 90 : (published && visibility === 'public' ? 65 : 120))
+              : (showSide ? 65 : 0)
+
+            if (isMain) {
+              return (
+                <div key={i} style={{
+                  position: 'relative', flexShrink: 0,
+                  transition: `all ${ease}`,
+                }}>
+                  <img
+                    src="/orb.png"
+                    alt=""
+                    style={{
+                      width: size, height: size,
+                      borderRadius: '50%', objectFit: 'cover',
+                      display: 'block',
+                      transition: `all ${ease}`,
+                    }}
+                  />
+                  {/* Status badge */}
+                  <div style={{
+                    position: 'absolute', top: -2, right: -6,
+                    width: published && isShare ? 28 : 36,
+                    height: published && isShare ? 28 : 36,
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.85)',
+                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    opacity: isInvite ? 0 : 1,
+                    transition: `all ${ease}`,
+                  }}>
+                    {published && visibility === 'public'
+                      ? <GlobeSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
+                      : published && visibility === 'unlisted'
+                        ? <LinkSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
+                        : <LockSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />}
+                  </div>
+                  {/* Invite user badges */}
+                  <div style={{
+                    position: 'absolute', bottom: -6, left: '50%',
+                    transform: 'translateX(-50%)', display: 'flex',
+                    opacity: isInvite ? 1 : 0,
+                    transition: `opacity ${ease} ${isInvite ? '0.1s' : '0s'}`,
+                    pointerEvents: 'none',
+                  }}>
+                    {[0, 1, 2].map((j) => (
+                      <img key={j} src="/orb.png" alt="" style={{
+                        width: 24, height: 24, borderRadius: '50%',
+                        objectFit: 'cover', border: '2px solid #fff',
+                        marginLeft: j > 0 ? -6 : 0,
+                      }} />
+                    ))}
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <img
+                key={i}
+                src="/orb.png"
+                alt=""
+                style={{
+                  width: size, height: size,
+                  borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+                  opacity: showSide ? 0.7 : 0,
+                  transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
+                  transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
+                }}
+              />
+            )
+          })}
+        </div>
+
+        {/* Content area — horizontal page slider */}
+        <div style={{
+          flex: 1, overflow: 'hidden', minHeight: 0,
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <div style={{
+            display: 'flex',
+            width: '200%',
+            flex: 1,
+            minHeight: 0,
+            transform: `translateX(${isShare ? '0' : '-50%'})`,
+            transition: `transform ${ease}`,
+          }}>
+            {/* ── Share page ── */}
+            <div style={{
+              width: '50%', height: '100%',
+              display: 'flex', flexDirection: 'column',
+            }}>
+              {/* Share copy — centered in remaining space */}
+              <div style={{
+                flex: 1, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                textAlign: 'center', padding: '0 30px', gap: 12,
+                position: 'relative', minHeight: 0,
+              }}>
+                {/* Unpublished copy — takes layout space */}
+                <div style={{
+                  display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+                  opacity: !published ? 1 : 0,
+                  transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
+                }}>
+                  <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                    Your mini-app is private. Publish it to share
+                  </h1>
+                  <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                    None of your data is shared upon publish
+                  </p>
+                </div>
+                {/* Published copy — overlaps */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+                  justifyContent: 'center', padding: '0 30px',
+                  opacity: published ? 1 : 0,
+                  transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1)`,
+                  pointerEvents: 'none',
+                }}>
+                  <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                    Your mini-app is published!
+                  </h1>
+                  <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                    If you want to use it with your friends only, use the Invite tab.
+                  </p>
+                </div>
+              </div>
+
+              {/* Share bottom controls */}
+              <div style={{ flexShrink: 0, padding: '0 20px' }}>
+                <div style={{
+                  background: '#f5f5f5', borderRadius: 32,
+                  padding: 20, display: 'flex', flexDirection: 'column', gap: 0,
+                }}>
+                  {/* Unpublished: expanded visibility options (clarity only) */}
+                  {clarity && (
+                    <div style={{
+                      maxHeight: !published ? 200 : 0,
+                      opacity: !published ? 1 : 0,
+                      overflow: 'hidden',
+                      transition: `all ${ease}`,
+                      marginBottom: !published ? 16 : 0,
+                    }}>
+                      <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
+                        <button
+                          onClick={() => setVisibility('public')}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                          }}
+                        >
+                          <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#949494'} />
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#949494' }}>Public</span>
+                            <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#aaaaaa' }}>
+                              Visible on Explore, anyone can search for and view
+                            </span>
+                          </div>
+                          {visibility === 'public'
+                            ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
+                            : <Circle size={28} color="#d4d4d4" />}
+                        </button>
+                        <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
+                        <button
+                          onClick={() => setVisibility('unlisted')}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            width: '100%', fontFamily: 'inherit', textAlign: 'left',
+                          }}
+                        >
+                          <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#949494'} />
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'unlisted' ? '#0a0a0a' : '#949494' }}>Unlisted</span>
+                            <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#aaaaaa' }}>
+                              Not visible on Explore or search, but anyone with the link can view
+                            </span>
+                          </div>
+                          {visibility === 'unlisted'
+                            ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
+                            : <Circle size={28} color="#d4d4d4" />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Published / Minimal: collapsed visibility row */}
+                  <div style={{
+                    maxHeight: (published || !clarity) ? 100 : 0,
+                    opacity: (published || !clarity) ? 1 : 0,
+                    overflow: 'hidden',
+                    transition: `all ${ease}`,
+                    marginBottom: (published || !clarity) ? 16 : 0,
+                  }}>
+                    <button
+                      onClick={() => setSheetOpen(true)}
+                      style={{
+                        background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
+                      }}
+                    >
+                      <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {visibility === 'public'
+                          ? <GlobeSimple size={32} color="#0a0a0a" />
+                          : <LinkSimple size={32} color="#0a0a0a" />}
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
+                        <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
+                        <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
+                      </div>
+                      <CaretRight size={24} weight="bold" color="#0a0a0a" />
+                    </button>
+                  </div>
+
+                  {/* Action button */}
+                  <button
+                    onClick={() => { !publishing && !unpublishing && (published ? handleShare() : handlePublish()) }}
+                    style={{
+                      width: '100%', background: '#171717', color: '#fafafa',
+                      border: 'none', borderRadius: 999, padding: '18px 30px',
+                      fontSize: 15, fontWeight: 500, lineHeight: '20px',
+                      cursor: publishing || unpublishing ? 'default' : 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                      boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
+                    }}
+                  >
+                    {publishing
+                      ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
+                      : published
+                        ? <><Export size={22} color="#fafafa" /> Share mini-app</>
+                        : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
+                  </button>
+                </div>
+
+                {/* Unpublish link */}
+                <div style={{
+                  maxHeight: published ? 60 : 0,
+                  opacity: published ? 1 : 0,
+                  overflow: 'hidden',
+                  transition: `all ${ease}`,
+                }}>
+                  <button
+                    onClick={() => !unpublishing && handleUnpublish()}
+                    style={{
+                      width: '100%',
+                      background: 'none', border: 'none',
+                      cursor: unpublishing ? 'default' : 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: 8, padding: '16px 0 0', fontFamily: 'inherit',
+                      fontSize: 15, fontWeight: 500, color: '#ef4444',
+                    }}
+                  >
+                    <LockSimple size={20} color="#ef4444" />
+                    {unpublishing ? 'Unpublishing...' : 'Unpublish your app'}
+                  </button>
+                </div>
+              </div>
+              <div style={{ height: 28, flexShrink: 0 }} />
+            </div>
+
+            {/* ── Invite page ── */}
+            <div style={{
+              width: '50%', height: '100%',
+              display: 'flex', flexDirection: 'column',
+            }}>
+              {/* Invite copy */}
+              <div style={{
+                flexShrink: 0, textAlign: 'center', padding: '12px 30px 0',
+                display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
+              }}>
+                <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
+                  Use this app together
+                </h1>
+                <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
+                  This is a short two line explainer that's specific to the app type
+                </p>
+              </div>
+
+              {/* Search */}
+              <div style={{ padding: '12px 20px 4px', flexShrink: 0 }}>
+                <div style={{
+                  background: 'rgba(23,23,23,0.03)', borderRadius: 999, padding: '14px 16px',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.15)',
+                }}>
+                  <MagnifyingGlass size={20} color="#a3a3a3" />
+                  <span style={{ color: '#a3a3a3', fontSize: 18, fontFamily: 'inherit' }}>Search by username</span>
+                </div>
+              </div>
+
+              {/* User list */}
+              <div style={{ flex: 1, overflow: 'auto', padding: '8px 20px', minHeight: 0 }}>
+                {MOCK_USERS.map((user, i) => (
                   <div key={i} style={{
-                    position: 'relative', flexShrink: 0,
-                    transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+                    display: 'flex', alignItems: 'center', padding: '10px 0', gap: 12,
                   }}>
                     <img
                       src="/orb.png"
                       alt=""
                       style={{
-                        width: size, height: size,
-                        borderRadius: '50%', objectFit: 'cover',
-                        display: 'block',
-                        opacity: 1,
-                        transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
+                        width: 42, height: 42, borderRadius: '50%',
+                        objectFit: 'cover', flexShrink: 0,
+                        filter: `hue-rotate(${user.hue}deg) saturate(0.6)`,
                       }}
                     />
-                    {/* Status badge */}
-                    <div style={{
-                      position: 'absolute', top: -2, right: -6,
-                      width: published && isShare ? 28 : 36,
-                      height: published && isShare ? 28 : 36,
-                      borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.85)',
-                      backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: isInvite ? 0 : 1,
-                      transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-                    }}>
-                      {published && visibility === 'public'
-                        ? <GlobeSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
-                        : published && visibility === 'unlisted'
-                          ? <LinkSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />
-                          : <LockSimple size={published && isShare ? 14 : 18} color="#0a0a0a" />}
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <div style={{ fontSize: 18, fontWeight: 400, color: '#0a0a0a', lineHeight: '22px', opacity: 0.7 }}>{user.name}</div>
+                      <div style={{ fontSize: 16, fontWeight: 400, color: '#737373', lineHeight: '18px', opacity: 0.7 }}>{user.handle}</div>
                     </div>
-                    {/* Invite user badges */}
-                    <div style={{
-                      position: 'absolute', bottom: -6, left: '50%',
-                      transform: 'translateX(-50%)', display: 'flex',
-                      opacity: isInvite ? 1 : 0,
-                      transition: `opacity 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${isInvite ? '0.1s' : '0s'}`,
-                      pointerEvents: 'none',
+                    <button style={{
+                      background: '#f5f5f5', border: 'none', borderRadius: 999,
+                      padding: '8px 16px', fontSize: 12, fontWeight: 500, color: '#0a0a0a',
+                      cursor: 'pointer', fontFamily: 'inherit',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.16)',
                     }}>
-                      {[0, 1, 2].map((j) => (
-                        <img key={j} src="/orb.png" alt="" style={{
-                          width: 24, height: 24, borderRadius: '50%',
-                          objectFit: 'cover', border: '2px solid #fff',
-                          marginLeft: j > 0 ? -6 : 0,
-                        }} />
-                      ))}
-                    </div>
+                      <Plus size={16} weight="regular" /> Invite
+                    </button>
                   </div>
-                )
-              }
+                ))}
+              </div>
 
-              return (
-                <img
-                  key={i}
-                  src="/orb.png"
-                  alt=""
-                  style={{
-                    width: size, height: size,
-                    borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
-                    opacity: showSide ? 0.7 : 0,
-                    transform: `translateX(${showSide ? 0 : offsetDir * 20}px) scale(${showSide ? 1 : 0.6})`,
-                    transition: `all 0.5s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
-                  }}
-                />
-              )
-            })}
-          </div>
-
-          {/* Copy — share (unpublished / published) and invite crossfade */}
-          <div style={{
-            position: 'relative', padding: '0 30px',
-            display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-          }}>
-            {/* Share unpublished copy — takes layout space */}
-            <div style={{
-              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              opacity: isShare && !published ? 1 : 0,
-              transform: `translateX(${isInvite ? '-40px' : '0'})`,
-              transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1), transform ${ease}`,
-            }}>
-              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                Your mini-app is private. Publish it to share
-              </h1>
-              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                None of your data is shared upon publish
-              </p>
-            </div>
-            {/* Share published copy — overlaps */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              justifyContent: 'center', padding: '0 30px',
-              opacity: isShare && published ? 1 : 0,
-              transform: `translateX(${isInvite ? '-40px' : '0'})`,
-              transition: `opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1), transform ${ease}`,
-              pointerEvents: 'none',
-            }}>
-              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                Your mini-app is published!
-              </h1>
-              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                If you want to use it with your friends only, use the Invite tab.
-              </p>
-            </div>
-            {/* Invite copy — overlaps */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center',
-              justifyContent: 'center', padding: '0 30px',
-              opacity: isInvite ? 1 : 0,
-              transform: `translateX(${isInvite ? '0' : '40px'})`,
-              transition: `opacity ${ease}, transform ${ease}`,
-              pointerEvents: 'none',
-            }}>
-              <h1 style={{ fontSize: 24, fontWeight: 500, lineHeight: '28px', color: '#0a0a0a' }}>
-                Use this app together
-              </h1>
-              <p style={{ fontSize: 16, fontWeight: 400, lineHeight: '18px', color: '#737373', maxWidth: 306 }}>
-                This is a short two line explainer that's specific to the app type
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Invite middle: search + user list */}
-        <div style={{
-          flexShrink: 0,
-          maxHeight: isInvite ? 500 : 0,
-          opacity: isInvite ? 1 : 0,
-          transform: `translateX(${isInvite ? '0' : '60px'})`,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          transition: `all ${ease}`,
-          pointerEvents: isInvite ? 'auto' : 'none',
-        }}>
-          {/* Search */}
-          <div style={{ padding: '8px 20px 4px', flexShrink: 0 }}>
-            <div style={{
-              background: 'rgba(23,23,23,0.03)', borderRadius: 999, padding: '14px 16px',
-              display: 'flex', alignItems: 'center', gap: 10,
-              boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.15)',
-            }}>
-              <MagnifyingGlass size={20} color="#a3a3a3" />
-              <span style={{ color: '#a3a3a3', fontSize: 18, fontFamily: 'inherit' }}>Search by username</span>
-            </div>
-          </div>
-
-          {/* User list */}
-          <div style={{ flex: 1, overflow: 'auto', padding: '8px 20px' }}>
-            {MOCK_USERS.map((user, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', padding: '10px 0', gap: 12,
-              }}>
-                <img
-                  src="/orb.png"
-                  alt=""
-                  style={{
-                    width: 42, height: 42, borderRadius: '50%',
-                    objectFit: 'cover', flexShrink: 0,
-                    filter: `hue-rotate(${user.hue}deg) saturate(0.6)`,
-                  }}
-                />
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <div style={{ fontSize: 18, fontWeight: 400, color: '#0a0a0a', lineHeight: '22px', opacity: 0.7 }}>{user.name}</div>
-                  <div style={{ fontSize: 16, fontWeight: 400, color: '#737373', lineHeight: '18px', opacity: 0.7 }}>{user.handle}</div>
-                </div>
+              {/* Invite bottom button */}
+              <div style={{ padding: '0 20px 28px', flexShrink: 0 }}>
                 <button style={{
-                  background: '#f5f5f5', border: 'none', borderRadius: 999,
-                  padding: '8px 16px', fontSize: 12, fontWeight: 500, color: '#0a0a0a',
-                  cursor: 'pointer', fontFamily: 'inherit',
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.16)',
+                  width: '100%', background: '#171717', color: '#fafafa',
+                  border: 'none', borderRadius: 999, padding: '18px 30px',
+                  fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
+                  boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
                 }}>
-                  <Plus size={16} weight="regular" /> Invite
+                  <Plus size={20} color="#fafafa" /> Invite via link
                 </button>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Invite bottom button */}
-        <div style={{
-          flexShrink: 0,
-          maxHeight: isInvite ? 100 : 0,
-          opacity: isInvite ? 1 : 0,
-          transform: `translateX(${isInvite ? '0' : '60px'})`,
-          overflow: 'hidden',
-          transition: `all ${ease}`,
-          pointerEvents: isInvite ? 'auto' : 'none',
-          padding: isInvite ? '0 20px 28px' : '0 20px 0',
-        }}>
-          <button style={{
-            width: '100%', background: '#171717', color: '#fafafa',
-            border: 'none', borderRadius: 999, padding: '18px 30px',
-            fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-            boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-          }}>
-            <Plus size={20} color="#fafafa" /> Invite via link
-          </button>
-        </div>
-
-        {/* Share bottom controls */}
-        <div style={{
-          flexShrink: 0,
-          maxHeight: isShare ? 500 : 0,
-          opacity: isShare ? 1 : 0,
-          transform: `translateX(${isShare ? '0' : '-60px'})`,
-          overflow: 'hidden',
-          transition: `all ${ease}`,
-          pointerEvents: isShare ? 'auto' : 'none',
-        }}>
-          <div style={{
-            margin: '0 20px 0', background: '#f5f5f5', borderRadius: 32,
-            padding: 20, display: 'flex', flexDirection: 'column', gap: 0,
-          }}>
-            {/* Unpublished: expanded visibility options (clarity only) */}
-            {clarity && (
-              <div style={{
-                maxHeight: !published ? 200 : 0,
-                opacity: !published ? 1 : 0,
-                overflow: 'hidden',
-                transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-                marginBottom: !published ? 16 : 0,
-              }}>
-                <div style={{ background: '#fff', borderRadius: 24, padding: '8px 8px', display: 'flex', flexDirection: 'column' }}>
-                  <button
-                    onClick={() => setVisibility('public')}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      width: '100%', fontFamily: 'inherit', textAlign: 'left',
-                    }}
-                  >
-                    <GlobeSimple size={28} color={visibility === 'public' ? '#0a0a0a' : '#949494'} />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <span style={{ fontSize: 15, fontWeight: 600, lineHeight: '18px', color: visibility === 'public' ? '#0a0a0a' : '#949494' }}>Public</span>
-                      <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'public' ? '#737373' : '#aaaaaa' }}>
-                        Visible on Explore, anyone can search for and view
-                      </span>
-                    </div>
-                    {visibility === 'public'
-                      ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
-                      : <Circle size={28} color="#d4d4d4" />}
-                  </button>
-                  <div style={{ height: 1, background: 'rgba(0,0,0,0.06)', margin: '0 14px' }} />
-                  <button
-                    onClick={() => setVisibility('unlisted')}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10, padding: '14px 14px 14px 10px',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      width: '100%', fontFamily: 'inherit', textAlign: 'left',
-                    }}
-                  >
-                    <LinkSimple size={28} color={visibility === 'unlisted' ? '#0a0a0a' : '#949494'} />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'unlisted' ? '#0a0a0a' : '#949494' }}>Unlisted</span>
-                      <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#aaaaaa' }}>
-                        Not visible on Explore or search, but anyone with the link can view
-                      </span>
-                    </div>
-                    {visibility === 'unlisted'
-                      ? <CheckCircle size={28} weight="fill" color="#0a0a0a" />
-                      : <Circle size={28} color="#d4d4d4" />}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Published / Minimal: collapsed visibility row */}
-            <div style={{
-              maxHeight: (published || !clarity) ? 100 : 0,
-              opacity: (published || !clarity) ? 1 : 0,
-              overflow: 'hidden',
-              transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-              marginBottom: (published || !clarity) ? 16 : 0,
-            }}>
-              <button
-                onClick={() => setSheetOpen(true)}
-                style={{
-                  background: '#fff', borderRadius: 24, padding: '20px 20px 20px 12px',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  cursor: 'pointer', border: 'none', width: '100%', fontFamily: 'inherit',
-                }}
-              >
-                <div style={{ flexShrink: 0, padding: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {visibility === 'public'
-                    ? <GlobeSimple size={32} color="#0a0a0a" />
-                    : <LinkSimple size={32} color="#0a0a0a" />}
-                </div>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-                  <span style={{ fontSize: 12, lineHeight: '14px', color: '#737373', fontWeight: 400 }}>Visibility</span>
-                  <span style={{ fontSize: 16, lineHeight: '18px', color: '#0a0a0a', fontWeight: 500 }}>{visibilityLabel}</span>
-                </div>
-                <CaretRight size={24} weight="bold" color="#0a0a0a" />
-              </button>
             </div>
-
-            {/* Action button */}
-            <button
-              onClick={() => { !publishing && !unpublishing && (published ? handleShare() : handlePublish()) }}
-              style={{
-                width: '100%', background: '#171717', color: '#fafafa',
-                border: 'none', borderRadius: 999, padding: '18px 30px',
-                fontSize: 15, fontWeight: 500, lineHeight: '20px',
-                cursor: publishing || unpublishing ? 'default' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7.5,
-                boxShadow: '0 1.87px 3.73px rgba(0,0,0,0.16)', fontFamily: 'inherit',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              {publishing
-                ? <><CloudArrowUp size={22} color="#fafafa" /> Publishing...</>
-                : published
-                  ? <><Export size={22} color="#fafafa" /> Share mini-app</>
-                  : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
-            </button>
           </div>
-
-          {/* Unpublish link */}
-          <div style={{
-            maxHeight: published ? 60 : 0,
-            opacity: published ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'all 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-          }}>
-            <button
-              onClick={() => !unpublishing && handleUnpublish()}
-              style={{
-                width: '100%',
-                background: 'none', border: 'none',
-                cursor: unpublishing ? 'default' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                gap: 8, padding: '16px 0 28px', fontFamily: 'inherit',
-                fontSize: 15, fontWeight: 500, color: '#ef4444',
-              }}
-            >
-              <LockSimple size={20} color="#ef4444" />
-              {unpublishing ? 'Unpublishing...' : 'Unpublish your app'}
-            </button>
-          </div>
-
-          <div style={{
-            height: 28,
-            maxHeight: !published ? 28 : 0,
-            transition: 'max-height 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-          }} />
         </div>
       </div>
 
