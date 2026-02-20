@@ -14,170 +14,12 @@ import {
   Plus,
 } from '@phosphor-icons/react'
 
-/* ─── App Card Carousel (publish animation) ─── */
-
-const CAROUSEL_APPS = [
-  { hue: 0 },
-  { hue: 0, isMain: true },
-  { hue: 0 },
-]
-
 const MOCK_USERS = [
   { name: 'TomTaylr', handle: 'BookWorm2023', hue: 30 },
   { name: 'SarahJ', handle: 'SarahJ_Design', hue: 120 },
   { name: 'MikeR', handle: 'MikeRunsALot', hue: 220 },
   { name: 'AlexPatel', handle: 'AlexP_2024', hue: 320 },
 ]
-
-function AppCarousel({ published, isInvite, visibility }) {
-  const isShare = !isInvite
-  const mainIndex = CAROUSEL_APPS.findIndex(a => a.isMain)
-  const showRow = isShare && published && visibility === 'public'
-
-  return (
-    <div style={{
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: showRow ? 12 : 0,
-        transition: 'gap 0.6s cubic-bezier(0.32, 0.72, 0, 1)',
-      }}>
-        {CAROUSEL_APPS.map((app, i) => {
-          const isMain = app.isMain
-          const delay = showRow ? 0.08 + Math.abs(i - mainIndex) * 0.06 : 0
-
-          let cardWidth, orbSize, cardPadding, cardBg, cardBorder, showCard, opacity, scale
-
-          if (isInvite) {
-            if (isMain) {
-              cardWidth = 90; orbSize = 90; cardPadding = '0'
-              cardBg = 'transparent'; cardBorder = '1px solid transparent'
-              showCard = false; opacity = 1; scale = 1
-            } else {
-              cardWidth = 0; orbSize = 0; cardPadding = '0'
-              cardBg = 'transparent'; cardBorder = '1px solid transparent'
-              showCard = false; opacity = 0; scale = 0.5
-            }
-          } else if (!published || visibility === 'unlisted') {
-            if (isMain) {
-              cardWidth = 175; orbSize = 115; cardPadding = '20px'
-              cardBg = 'rgba(245,245,245,0.6)'; cardBorder = '1px solid rgba(0,0,0,0.05)'
-              showCard = true; opacity = 1; scale = 1
-            } else {
-              cardWidth = 0; orbSize = 0; cardPadding = '0'
-              cardBg = 'transparent'; cardBorder = '1px solid transparent'
-              showCard = false; opacity = 0; scale = 0.8
-            }
-          } else {
-            cardWidth = 135; orbSize = 85; cardPadding = '16px 12px'
-            cardBg = 'rgba(245,245,245,0.6)'; cardBorder = '1px solid rgba(0,0,0,0.05)'
-            showCard = true; opacity = 1; scale = 1
-          }
-
-          return (
-            <div
-              key={i}
-              style={{
-                width: cardWidth,
-                flexShrink: 0,
-                background: cardBg,
-                borderRadius: 24,
-                border: cardBorder,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: cardPadding,
-                gap: showCard ? 8 : 0,
-                position: 'relative',
-                opacity,
-                transform: `scale(${scale})`,
-                overflow: isMain && isInvite ? 'visible' : 'hidden',
-                transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
-              }}
-            >
-              {/* Status icon */}
-              <div style={{
-                position: 'absolute',
-                top: 12, right: 12,
-                opacity: showCard ? 0.4 : 0,
-                transition: `opacity 0.4s ease ${delay}s`,
-              }}>
-                {isMain && published && visibility === 'public'
-                  ? <GlobeSimple size={18} color="#0a0a0a" />
-                  : <LockSimple size={18} color="#0a0a0a" />}
-              </div>
-
-              {/* Orb — shared element for main card */}
-              <div style={{ position: 'relative', flexShrink: 0 }}>
-                <img
-                  src="/orb.png"
-                  alt=""
-                  style={{
-                    width: orbSize,
-                    height: orbSize,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    filter: app.hue !== 0 ? `hue-rotate(${app.hue}deg)` : 'none',
-                    flexShrink: 0,
-                    transition: `all 0.6s cubic-bezier(0.32, 0.72, 0, 1) ${delay}s`,
-                  }}
-                />
-                {/* Invite user badges — only on main card */}
-                {isMain && (
-                  <div style={{
-                    position: 'absolute',
-                    bottom: -6, left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    opacity: isInvite ? 1 : 0,
-                    transition: `opacity 0.3s ease ${isInvite ? '0.15s' : '0s'}`,
-                    pointerEvents: 'none',
-                  }}>
-                    {[200, 100, 320].map((hue, j) => (
-                      <img
-                        key={j}
-                        src="/orb.png"
-                        alt=""
-                        style={{
-                          width: 24, height: 24, borderRadius: '50%',
-                          objectFit: 'cover', border: '2px solid #fff',
-                          marginLeft: j > 0 ? -6 : 0,
-                          filter: `hue-rotate(${hue}deg) brightness(0.8)`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Card label */}
-              <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMain ? 0 : 5,
-                maxHeight: showCard ? 40 : 0,
-                opacity: showCard ? 1 : 0,
-                overflow: 'hidden',
-                transition: `all 0.4s ease ${delay}s`,
-              }}>
-                {isMain ? (<>
-                  <span style={{ fontSize: 15, fontWeight: 500, color: '#C47020' }}>Meditation</span>
-                  <span style={{ fontSize: 15, fontWeight: 500, color: '#0a0a0a' }}>moments</span>
-                </>) : (<>
-                  <div style={{ width: 60, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.08)' }} />
-                  <div style={{ width: 40, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.05)' }} />
-                </>)}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
 
 /* ─── iPhone Frame ─── */
 
@@ -497,8 +339,65 @@ function ShareScreen({ mode }) {
           minHeight: 0,
           transition: 'flex-grow 0.45s cubic-bezier(0.32, 0.72, 0, 1), padding 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
         }}>
-          {/* Card carousel — shared element transition for main orb */}
-          <AppCarousel published={published} isInvite={isInvite} visibility={visibility} />
+          {/* App icon with status badge */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <img
+              src="/orb.png"
+              alt=""
+              style={{
+                width: isInvite ? 90 : 120,
+                height: isInvite ? 90 : 120,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                transition: 'all 0.45s cubic-bezier(0.32, 0.72, 0, 1)',
+              }}
+            />
+            {/* Status badge — glassy circle */}
+            <div style={{
+              position: 'absolute',
+              top: isInvite ? -4 : -2,
+              right: isInvite ? -8 : -6,
+              width: 36, height: 36,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.85)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              opacity: isInvite ? 0 : 1,
+              transition: 'all 0.35s ease',
+            }}>
+              {published && visibility === 'public'
+                ? <GlobeSimple size={18} color="#0a0a0a" />
+                : published && visibility === 'unlisted'
+                  ? <LinkSimple size={18} color="#0a0a0a" />
+                  : <LockSimple size={18} color="#0a0a0a" />}
+            </div>
+            {/* Invite user badges */}
+            <div style={{
+              position: 'absolute',
+              bottom: -6, left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              opacity: isInvite ? 1 : 0,
+              transition: `opacity 0.3s ease ${isInvite ? '0.15s' : '0s'}`,
+              pointerEvents: 'none',
+            }}>
+              {[200, 100, 320].map((hue, j) => (
+                <img
+                  key={j}
+                  src="/orb.png"
+                  alt=""
+                  style={{
+                    width: 24, height: 24, borderRadius: '50%',
+                    objectFit: 'cover', border: '2px solid #fff',
+                    marginLeft: j > 0 ? -6 : 0,
+                    filter: `hue-rotate(${hue}deg) brightness(0.8)`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
 
           {/* Copy — share and invite crossfade in same space */}
           <div style={{
