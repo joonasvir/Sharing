@@ -825,19 +825,6 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     </button>
                   </div>
 
-                  {/* Link mode: disclaimer + private share link card */}
-                  {isLink && !published && (
-                    <>
-                      <p style={{
-                        fontSize: 12, fontWeight: 400, lineHeight: '16px',
-                        color: '#a3a3a3', textAlign: 'center', padding: '0 8px',
-                        marginBottom: 16,
-                      }}>
-                        None of your data is shared upon publish or share
-                      </p>
-                    </>
-                  )}
-
                   {/* Action button */}
                   <button
                     onClick={() => { !publishing && !unpublishing && (published && !hasUnpublishedUpdates ? handleShare() : handlePublish()) }}
