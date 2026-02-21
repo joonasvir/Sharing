@@ -892,7 +892,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                         : published
                           ? <><Export size={22} color="#fafafa" /> Share mini-app</>
                           : isLink
-                            ? <><Broadcast size={22} color="#fafafa" /> Publish mini-app</>
+                            ? <><CloudArrowUp size={22} color="#fafafa" /> Publish mini-app</>
                             : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
                   </button>
 
@@ -911,9 +911,10 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                         border: 'none', padding: '14px 0',
                         fontSize: 15, fontWeight: 500, lineHeight: '20px', cursor: 'pointer',
                         fontFamily: 'inherit', textAlign: 'center',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       }}
                     >
-                      Get private share link
+                      <LinkSimple size={18} weight="bold" color="#737373" /> Get private share link
                     </button>
                   </div>
 
