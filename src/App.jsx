@@ -364,6 +364,65 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published }) {
   )
 }
 
+/* ─── Private Link Sheet ─── */
+
+function PrivateLinkSheet({ open, linkState, onClose }) {
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)',
+          zIndex: 20, opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
+        }}
+      />
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        background: '#fff', borderRadius: '32px 32px 46px 46px', zIndex: 30,
+        transform: open ? 'translateY(0)' : 'translateY(100%)',
+        transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        padding: '12px 20px 40px', display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div style={{
+            width: 36, height: 5, borderRadius: 3,
+            background: 'rgba(0,0,0,0.15)',
+          }} />
+        </div>
+        <div style={{
+          background: '#f5f5f5', borderRadius: 20, padding: 16,
+          display: 'flex', flexDirection: 'column', gap: 10,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LinkSimple size={18} color="#0a0a0a" />
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#0a0a0a' }}>Private share link</span>
+          </div>
+          <p style={{ fontSize: 13, fontWeight: 400, lineHeight: '17px', color: '#737373', margin: 0 }}>
+            Private mini-apps are only visible to you and whoever you share the link to.
+          </p>
+          <div style={{
+            background: '#fff', borderRadius: 12, padding: '12px 14px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            {linkState === 'generating' ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <SpinnerGap size={16} color="#a3a3a3" style={{ animation: 'spin 1s linear infinite' }} />
+                <span style={{ fontSize: 14, fontWeight: 400, color: '#a3a3a3' }}>Generating share link</span>
+              </div>
+            ) : (
+              <>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#0a0a0a' }}>wabi.ai/121212</span>
+                <Copy size={18} color="#737373" style={{ cursor: 'pointer' }} />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
 /* ─── Tabs ─── */
 
 function Tabs({ activeTab, setActiveTab }) {
@@ -427,6 +486,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
   const clarity = mode === 'clarity'
   const isLink = mode === 'link'
   const [linkState, setLinkState] = useState('idle')
+  const [linkSheetOpen, setLinkSheetOpen] = useState(false)
   const linkTimerRef = useRef(null)
   const isUpdates = screen === 'updates'
   const hasUnpublishedUpdates = isUpdates && !updatesPublished
@@ -467,6 +527,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
   }
 
   const handleGetLink = () => {
+    setLinkSheetOpen(true)
     setLinkState('generating')
     linkTimerRef.current = setTimeout(() => {
       setLinkState('generated')
@@ -848,13 +909,13 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                             : <><CloudArrowUp size={22} color="#fafafa" /> Publish</>}
                   </button>
 
-                  {/* Get private share link — link mode, unpublished, idle */}
+                  {/* Get private share link — link mode, unpublished */}
                   <div style={{
-                    maxHeight: (isLink && !published && linkState === 'idle') ? 60 : 0,
-                    opacity: (isLink && !published && linkState === 'idle') ? 1 : 0,
+                    maxHeight: (isLink && !published) ? 60 : 0,
+                    opacity: (isLink && !published) ? 1 : 0,
                     overflow: 'hidden',
                     transition: `all ${ease}`,
-                    marginTop: (isLink && !published && linkState === 'idle') ? 8 : 0,
+                    marginTop: (isLink && !published) ? 8 : 0,
                   }}>
                     <button
                       onClick={handleGetLink}
@@ -868,44 +929,6 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     >
                       <LinkSimple size={18} weight="bold" color="#737373" /> Get private share link
                     </button>
-                  </div>
-
-                  {/* Private share link card — link mode, after pressing get link */}
-                  <div style={{
-                    maxHeight: (isLink && !published && linkState !== 'idle') ? 300 : 0,
-                    opacity: (isLink && !published && linkState !== 'idle') ? 1 : 0,
-                    overflow: 'hidden',
-                    transition: `all ${ease}`,
-                    marginTop: (isLink && !published && linkState !== 'idle') ? 12 : 0,
-                  }}>
-                    <div style={{
-                      background: '#f5f5f5', borderRadius: 20, padding: 16,
-                      display: 'flex', flexDirection: 'column', gap: 10,
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <LinkSimple size={18} color="#0a0a0a" />
-                        <span style={{ fontSize: 15, fontWeight: 600, color: '#0a0a0a' }}>Private share link</span>
-                      </div>
-                      <p style={{ fontSize: 13, fontWeight: 400, lineHeight: '17px', color: '#737373', margin: 0 }}>
-                        Private mini-apps are only visible to you and whoever you share the link to.
-                      </p>
-                      <div style={{
-                        background: '#fff', borderRadius: 12, padding: '12px 14px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      }}>
-                        {linkState === 'generating' ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <SpinnerGap size={16} color="#a3a3a3" style={{ animation: 'spin 1s linear infinite' }} />
-                            <span style={{ fontSize: 14, fontWeight: 400, color: '#a3a3a3' }}>Generating share link</span>
-                          </div>
-                        ) : (
-                          <>
-                            <span style={{ fontSize: 14, fontWeight: 500, color: '#0a0a0a' }}>wabi.ai/121212</span>
-                            <Copy size={18} color="#737373" style={{ cursor: 'pointer' }} />
-                          </>
-                        )}
-                      </div>
-                    </div>
                   </div>
 
                   {/* Share old version button — updates state only */}
@@ -1078,6 +1101,12 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
           onClose={() => setSheetOpen(false)}
         />
       )}
+
+      <PrivateLinkSheet
+        open={linkSheetOpen}
+        linkState={linkState}
+        onClose={() => setLinkSheetOpen(false)}
+      />
     </div>
   )
 }
