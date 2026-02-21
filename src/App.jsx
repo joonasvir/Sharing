@@ -843,7 +843,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                         marginBottom: linkState !== 'idle' ? 12 : 0,
                       }}>
                         <div style={{
-                          background: '#fff', borderRadius: 20, padding: 16,
+                          background: '#f5f5f5', borderRadius: 20, padding: 16,
                           display: 'flex', flexDirection: 'column', gap: 10,
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -854,7 +854,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                             Private mini-apps are only visible to you and whoever you share the link to.
                           </p>
                           <div style={{
-                            background: '#f5f5f5', borderRadius: 12, padding: '12px 14px',
+                            background: '#fff', borderRadius: 12, padding: '12px 14px',
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           }}>
                             {linkState === 'generating' ? (
