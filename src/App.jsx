@@ -724,8 +724,9 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
               {/* Share bottom controls */}
               <div style={{ flexShrink: 0, padding: '0 20px' }}>
                 <div style={{
-                  background: '#f5f5f5', borderRadius: 32,
-                  padding: 20, display: 'flex', flexDirection: 'column', gap: 0,
+                  background: isLink ? 'none' : '#f5f5f5', borderRadius: 32,
+                  padding: isLink ? 0 : 20, display: 'flex', flexDirection: 'column', gap: 0,
+                  transition: `all ${ease}`,
                 }}>
                   {/* Unpublished: expanded visibility options (clarity only) */}
                   {clarity && (
