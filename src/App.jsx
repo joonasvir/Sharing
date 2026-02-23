@@ -366,7 +366,7 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published }) {
 
 /* ─── Private Link Sheet ─── */
 
-function PrivateLinkSheet({ open, linkState, onClose }) {
+function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
   return (
     <>
       <div
@@ -417,6 +417,25 @@ function PrivateLinkSheet({ open, linkState, onClose }) {
               </>
             )}
           </div>
+          {hasUpdates && (
+            <div style={{
+              background: '#f5f5f5', borderRadius: 14, padding: 16,
+              display: 'flex', flexDirection: 'column', gap: 12,
+              marginTop: 4,
+            }}>
+              <p style={{ fontSize: 15, fontWeight: 400, lineHeight: '20px', color: '#737373', margin: 0 }}>
+                Your share link is not up-to-date. Get a new share link with updates?
+              </p>
+              <button style={{
+                width: '100%', background: '#171717', color: '#fafafa',
+                border: 'none', borderRadius: 999, padding: '14px 20px',
+                fontSize: 15, fontWeight: 500, lineHeight: '20px',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}>
+                Update share link
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -1105,6 +1124,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
       <PrivateLinkSheet
         open={linkSheetOpen}
         linkState={linkState}
+        hasUpdates={hasUnpublishedUpdates}
         onClose={() => setLinkSheetOpen(false)}
       />
     </div>
