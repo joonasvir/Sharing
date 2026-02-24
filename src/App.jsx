@@ -325,7 +325,7 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published, isLin
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ fontSize: 18, fontWeight: 500, lineHeight: '22px', color: visibility === 'unlisted' ? '#0a0a0a' : '#737373' }}>Private Link</span>
                 <span style={{ fontSize: 14, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#737373' }}>
-                  Only people with your link can open it
+                  Only people with the link
                 </span>
               </div>
               <div style={{ flexShrink: 0 }}>
@@ -911,7 +911,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                             <span style={{ fontSize: 15, fontWeight: 500, lineHeight: '18px', color: visibility === 'unlisted' ? '#0a0a0a' : '#949494' }}>Private Link</span>
                             <span style={{ fontSize: 13, fontWeight: 400, lineHeight: '16px', color: visibility === 'unlisted' ? '#525252' : '#aaaaaa' }}>
-                              Only people with your link can open it
+                              Only people with the link
                             </span>
                           </div>
                           {visibility === 'unlisted'
