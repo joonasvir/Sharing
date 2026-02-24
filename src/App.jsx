@@ -1230,7 +1230,7 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange, anim, onAn
 /* ─── App ─── */
 
 export default function App() {
-  const [mode, setMode] = useState('minimal')
+  const [mode, setMode] = useState('link')
   const [screen, setScreen] = useState('first-publish')
   const [anim, setAnim] = useState({ ...DEFAULT_ANIM })
   const [isMobile, setIsMobile] = useState(false)
