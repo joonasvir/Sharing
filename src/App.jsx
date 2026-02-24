@@ -369,8 +369,9 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published, isLin
 
 /* ─── Private Link Sheet ─── */
 
-function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
+function PrivateLinkSheet({ open, linkState, hasUpdates, onClose, onUpdateLink }) {
   const [copied, setCopied] = useState(false)
+  const [updatingLink, setUpdatingLink] = useState(false)
   const copyTimerRef = useRef(null)
 
   const handleCopy = () => {
@@ -380,8 +381,18 @@ function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
     copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleUpdateLink = () => {
+    if (updatingLink) return
+    setUpdatingLink(true)
+    if (onUpdateLink) onUpdateLink()
+  }
+
   useEffect(() => {
-    if (!open) { setCopied(false); if (copyTimerRef.current) clearTimeout(copyTimerRef.current) }
+    if (!open) {
+      setCopied(false)
+      setUpdatingLink(false)
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    }
   }, [open])
 
   return (
@@ -458,25 +469,33 @@ function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
               </>
             )}
           </div>
-          {hasUpdates && (
+          <div style={{
+            maxHeight: (hasUpdates && !updatingLink) ? 200 : 0,
+            opacity: (hasUpdates && !updatingLink) ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'max-height 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease, margin 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+            marginTop: (hasUpdates && !updatingLink) ? 4 : 0,
+          }}>
             <div style={{
               background: '#f5f5f5', borderRadius: 14, padding: 16,
               display: 'flex', flexDirection: 'column', gap: 12,
-              marginTop: 4,
             }}>
               <p style={{ fontSize: 15, fontWeight: 400, lineHeight: '20px', color: '#737373', margin: 0 }}>
                 Your share link is not up-to-date. Get a new share link with updates?
               </p>
-              <button style={{
-                width: '100%', background: '#171717', color: '#fafafa',
-                border: 'none', borderRadius: 999, padding: '14px 20px',
-                fontSize: 15, fontWeight: 500, lineHeight: '20px',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}>
+              <button
+                onClick={handleUpdateLink}
+                style={{
+                  width: '100%', background: '#171717', color: '#fafafa',
+                  border: 'none', borderRadius: 999, padding: '14px 20px',
+                  fontSize: 15, fontWeight: 500, lineHeight: '20px',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
                 Update share link
               </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </>
@@ -1169,6 +1188,11 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
         linkState={linkState}
         hasUpdates={hasUnpublishedUpdates}
         onClose={() => setLinkSheetOpen(false)}
+        onUpdateLink={() => {
+          setLinkState('generating')
+          if (linkTimerRef.current) clearTimeout(linkTimerRef.current)
+          linkTimerRef.current = setTimeout(() => setLinkState('generated'), 2000)
+        }}
       />
     </div>
   )
