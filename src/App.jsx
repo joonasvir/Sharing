@@ -522,6 +522,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
   useEffect(() => {
     setLinkState('idle')
     if (linkTimerRef.current) clearTimeout(linkTimerRef.current)
+    if (mode === 'link') setVisibility('public')
   }, [mode])
 
   const isShare = activeTab === 'share'
