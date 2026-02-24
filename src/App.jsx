@@ -226,8 +226,8 @@ function Sidebar({ mode, onModeChange, screen, onScreenChange, anim, onAnimChang
       <SegmentedControl
         label="Layout"
         options={[
-          { label: 'v1: Clarity', value: 'clarity' },
-          { label: 'v2: Minimal', value: 'minimal' },
+          { label: 'v1: Minimal', value: 'minimal' },
+          { label: 'v2: Clarity', value: 'clarity' },
           { label: 'v3: Link', value: 'link' },
         ]}
         value={mode}
@@ -1256,8 +1256,8 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange, anim, onAn
           <SegmentedControl
             label="Layout"
             options={[
-              { label: 'v1: Clarity', value: 'clarity' },
-              { label: 'v2: Minimal', value: 'minimal' },
+              { label: 'v1: Minimal', value: 'minimal' },
+              { label: 'v2: Clarity', value: 'clarity' },
               { label: 'v3: Link', value: 'link' },
             ]}
             value={mode}
@@ -1297,7 +1297,7 @@ function MobileControls({ mode, onModeChange, screen, onScreenChange, anim, onAn
 /* ─── App ─── */
 
 export default function App() {
-  const [mode, setMode] = useState('link')
+  const [mode, setMode] = useState('minimal')
   const [screen, setScreen] = useState('first-publish')
   const [anim, setAnim] = useState({ ...DEFAULT_ANIM })
   const [isMobile, setIsMobile] = useState(false)
