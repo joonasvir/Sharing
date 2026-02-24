@@ -123,8 +123,8 @@ const DEFAULT_ANIM = {
   copyFadeDuration: 0.4,
   copyFadeDelay: 0.35,
   orbGap: 10,
-  mainOrbSize: 78,
-  sideOrbSize: 78,
+  mainOrbSize: 90,
+  sideOrbSize: 72,
 }
 
 function Slider({ label, value, min, max, step, onChange, unit = '' }) {
@@ -914,7 +914,7 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     <button
                       onClick={() => setSheetOpen(true)}
                       style={{
-                        background: '#fff',
+                        background: (isLink && published) ? '#f5f5f5' : '#fff',
                         borderRadius: published ? 20 : 24,
                         padding: published ? '14px 16px 14px 10px' : '20px 20px 20px 12px',
                         display: 'flex', alignItems: 'center',
