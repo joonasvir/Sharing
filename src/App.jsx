@@ -14,6 +14,7 @@ import {
   Plus,
   Broadcast,
   Copy,
+  Check,
   SpinnerGap,
 } from '@phosphor-icons/react'
 
@@ -369,6 +370,20 @@ function VisibilitySheet({ open, visibility, onSelect, onClose, published, isLin
 /* ─── Private Link Sheet ─── */
 
 function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
+  const [copied, setCopied] = useState(false)
+  const copyTimerRef = useRef(null)
+
+  const handleCopy = () => {
+    if (linkState === 'generating' || copied) return
+    setCopied(true)
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000)
+  }
+
+  useEffect(() => {
+    if (!open) { setCopied(false); if (copyTimerRef.current) clearTimeout(copyTimerRef.current) }
+  }, [open])
+
   return (
     <>
       <div
@@ -403,10 +418,15 @@ function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
           <p style={{ fontSize: 15, fontWeight: 400, lineHeight: '20px', color: '#737373', margin: 0 }}>
             Private mini-apps are only visible to you and whoever you share the link to.
           </p>
-          <div style={{
-            background: '#f5f5f5', borderRadius: 14, padding: '14px 16px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          }}>
+          <div
+            onClick={handleCopy}
+            style={{
+              background: '#f5f5f5', borderRadius: 14, padding: '14px 16px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              cursor: linkState === 'generating' ? 'default' : 'pointer',
+              transition: 'background 0.2s ease',
+            }}
+          >
             {linkState === 'generating' ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <SpinnerGap size={16} color="#a3a3a3" style={{ animation: 'spin 1s linear infinite' }} />
@@ -414,8 +434,27 @@ function PrivateLinkSheet({ open, linkState, hasUpdates, onClose }) {
               </div>
             ) : (
               <>
-                <span style={{ fontSize: 16, fontWeight: 500, color: '#0a0a0a' }}>wabi.ai/121212</span>
-                <Copy size={18} color="#737373" style={{ cursor: 'pointer' }} />
+                <span style={{
+                  fontSize: 16, fontWeight: 500,
+                  color: copied ? '#22c55e' : '#0a0a0a',
+                  transition: 'color 0.25s ease',
+                }}>
+                  {copied ? 'Link copied' : 'wabi.ai/121212'}
+                </span>
+                <div style={{ position: 'relative', width: 18, height: 18 }}>
+                  <Copy size={18} color="#737373" style={{
+                    position: 'absolute', top: 0, left: 0,
+                    opacity: copied ? 0 : 1,
+                    transform: copied ? 'scale(0.5)' : 'scale(1)',
+                    transition: 'opacity 0.2s ease, transform 0.2s ease',
+                  }} />
+                  <Check size={18} weight="bold" color="#22c55e" style={{
+                    position: 'absolute', top: 0, left: 0,
+                    opacity: copied ? 1 : 0,
+                    transform: copied ? 'scale(1)' : 'scale(0.5)',
+                    transition: 'opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }} />
+                </div>
               </>
             )}
           </div>
