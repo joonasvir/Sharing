@@ -992,13 +992,13 @@ function ShareScreen({ mode, screen, anim = DEFAULT_ANIM }) {
                     </button>
                   </div>
 
-                  {/* Share old version button — updates state only */}
+                  {/* Share old version button — updates state only, not in v3 link */}
                   <div style={{
-                    maxHeight: hasUnpublishedUpdates ? 60 : 0,
-                    opacity: hasUnpublishedUpdates ? 1 : 0,
+                    maxHeight: (hasUnpublishedUpdates && !isLink) ? 60 : 0,
+                    opacity: (hasUnpublishedUpdates && !isLink) ? 1 : 0,
                     overflow: 'hidden',
                     transition: `all ${ease}`,
-                    marginTop: hasUnpublishedUpdates ? 8 : 0,
+                    marginTop: (hasUnpublishedUpdates && !isLink) ? 8 : 0,
                   }}>
                     <button
                       onClick={() => handleShare()}
